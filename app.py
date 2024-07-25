@@ -1,7 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
+
+MONGO_URI = "mongodb+srv://ibtsamsohail:mongo12345@cluster0.irr8qij.mongodb.net/?retryWrites=true&w=majority"
+
+
+try:
+    client = MongoClient(MONGO_URI)
+    db = client.VendorManagement  
+    users_collection = db.users  
+    print("Connected to MongoDB!")
+except ConnectionFailure as e:
+    print(f"Error while connecting to MongoDB: {e}")
 
 @app.route('/')
 def index():
@@ -13,14 +26,18 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Example authentication (replace with your auth logic)
+        # Get the submitted credentials
         username = request.form['username']
         password = request.form['password']
-        if username == 'admin' and password == 'admin':
+    
+        user = users_collection.find_one({"username": username, "password": password})
+        if user:    
             session['username'] = username
             return redirect(url_for('dashboard'))
         else:
+            
             return render_template('login.html', error="Invalid credentials")
+    
     return render_template('login.html')
 
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -32,7 +49,6 @@ def dashboard():
         return render_template('dashboard.html', username=session['username'])
     else:
         return redirect(url_for('login'))
-
 
 @app.route('/logout')
 def logout():

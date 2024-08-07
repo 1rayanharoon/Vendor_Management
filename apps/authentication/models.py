@@ -40,6 +40,22 @@ class Users(db.Model, UserMixin):
 
     def __repr__(self):
         return str(self.username)
+    
+#create vendor class like above with basic information like location, name and contact
+class Vendor(db.Model):
+    __tablename__ = 'Vendors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    contact = db.Column(db.String(100), nullable=False)
+    # Add other relevant fields as needed
+
+    def __repr__(self):
+        return f"Vendor('{self.name}', '{self.location}')"
+
+
+
 
 
 @login_manager.user_loader

@@ -4,6 +4,8 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask import render_template, redirect, request, url_for
+from apps.authentication.util import hash_pass
+from apps import mongo
 from flask_login import (
     current_user,
     login_user,
@@ -44,12 +46,14 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        # Locate user
-        user = Users.query.filter_by(username=username).first()
+         # Locate user
+        user = mongo.db.users.find_one({'username': username})
 
         # Check the password
-        if user and verify_pass(password, user.password):
-
+        if user and verify_pass(password, user['password']):
+            user_obj = Users(username=user['username'], email=user['email'])
+            login_user(user_obj)
+            return redirect(url_for('authentication_blueprint.route_default'))
             login_user(user)
             return redirect(url_for('authentication_blueprint.route_default'))
 
@@ -68,34 +72,37 @@ def login():
 def register():
     create_account_form = CreateAccountForm(request.form)
     if 'register' in request.form:
-
         username = request.form['username']
         email = request.form['email']
-        
-        # Check usename exists
-        user = Users.query.filter_by(username=username).first()
+        password = request.form['password']
+        account_type = request.form['account_type']
+
+        # Check if username or email already exists
+        user = mongo.db.users.find_one({'username': username})
         if user:
             return render_template('accounts/register.html',
                                    msg='Username already registered',
                                    success=False,
                                    form=create_account_form)
 
-        # Check email exists
-        user = Users.query.filter_by(email=email).first()
+        user = mongo.db.users.find_one({'email': email})
         if user:
             return render_template('accounts/register.html',
                                    msg='Email already registered',
                                    success=False,
                                    form=create_account_form)
 
-        # else we can create the user
-        user = Users(**request.form)
-        db.session.add(user)
-        db.session.commit()
+        # Hash the password
+        hashed_password = hash_pass(password)
 
-        # Delete user from session
-        logout_user()
-        
+        # Insert new user
+        mongo.db.users.insert_one({
+            'username': username,
+            'email': email,
+            'password': hashed_password,
+            'account_type': account_type
+        })
+
         return render_template('accounts/register.html',
                                msg='Account created successfully.',
                                success=True,
@@ -103,6 +110,7 @@ def register():
 
     else:
         return render_template('accounts/register.html', form=create_account_form)
+
 
 
 @blueprint.route('/logout')

@@ -4,7 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SelectField
 from wtforms.validators import Email, DataRequired
 
 # login and registration
@@ -29,4 +29,13 @@ class CreateAccountForm(FlaskForm):
     password = PasswordField('Password',
                              id='pwd_create',
                              validators=[DataRequired()])
+    account_type = SelectField('Account Type',
+                               id='acctype_create',
+                               choices=[
+                                   ('admin', 'Admin'),
+                                   ('manager', 'Manager'),
+                                   ('inspector', 'Inspector'),
+                                   ('client', 'Client')
+                               ],
+                               validators=[DataRequired()])
     

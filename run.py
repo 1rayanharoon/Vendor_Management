@@ -1,35 +1,26 @@
-import os
-from   flask_migrate import Migrate
-from   flask_minify  import Minify
-from   sys import exit
+from flask import Flask
+from flask_pymongo import PyMongo
+from flask_login import LoginManager
+from apps.config import Config
+from apps.auth import blueprint as auth_blueprint
+from apps.home import blueprint as home_blueprint
 
-from apps.config import config_dict
-from apps import create_app, db
+# Initialize the app
+app = Flask(__name__)
+app.config.from_object(Config)
 
-# WARNING: Don't run with debug turned on in production!
-DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+# Initialize MongoDB
+mongo = PyMongo(app)
 
-# The configuration
-get_config_mode = 'Debug' if DEBUG else 'Production'
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
 
-try:
+# Register blueprints
+app.register_blueprint(auth_blueprint)
+app.register_blueprint(home_blueprint)
 
-    # Load the configuration using the default values
-    app_config = config_dict[get_config_mode.capitalize()]
-
-except KeyError:
-    exit('Error: Invalid <config_mode>. Expected values [Debug, Production] ')
-
-app = create_app(app_config)
-Migrate(app, db)
-
-if not DEBUG:
-    Minify(app=app, html=True, js=False, cssless=False)
-    
-if DEBUG:
-    app.logger.info('DEBUG       = ' + str(DEBUG)             )
-    app.logger.info('DBMS        = ' + app_config.SQLALCHEMY_DATABASE_URI)
-    app.logger.info('ASSETS_ROOT = ' + app_config.ASSETS_ROOT )
-
+# Run the application
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

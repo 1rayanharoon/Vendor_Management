@@ -6,6 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 import os
 
 class Config(object):
+    
 
     basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,6 +17,9 @@ class Config(object):
     # This will create a file in <app> FOLDER
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
+
+    MONGO_URI = os.getenv('mongodb+srv://ibtsamsohail:mongo12345@cluster0.irr8qij.mongodb.net/', 'mongodb://localhost:27017/vendor_management')
+
 
     # Assets Management
     ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')    
@@ -32,10 +36,14 @@ class Config(object):
 class ProductionConfig(Config):
     DEBUG = False
 
+
+
     # Security
     SESSION_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_DURATION = 3600
+
+
 
     # PostgreSQL database
     SQLALCHEMY_DATABASE_URI = '{}://{}:{}@{}:{}/{}'.format(

@@ -2,74 +2,153 @@
 
 {% block title %} Dashboard {% endblock %} 
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<style>
+  /* Refinements to Match Existing Black Theme */
+  .modal-content {
+    background: linear-gradient(135deg, #09090a 0%, #1d1e20 100%); /* Glossy gradient */
+    color: #dee2e6; /* Light Gray Text */
+  }
+  .modal-header, .modal-footer {
+    border-color: #343a40; /* Subtly Darker Border */
+  }
+  .form-control {
+    background-color: #343a40; /* Input Field Background */
+    color: #dee2e6; /* Input Field Text */
+    border-color: #495057; /* Input Field Border */
+  }
+  .form-control:focus {
+    background-color: #343a40;
+    color: #dee2e6;
+    border-color: #6c757d;  /* Focused Input Field Border */
+    box-shadow: none; /* Remove default focus shadow */
+  }
+  .form-label {
+    color: #dee2e6; /* Label Text */
+  }
+
+  /* Center the Button */
+  .modal-footer {
+    justify-content: center;
+  }
+</style>
+{% endblock stylesheets %}
 
 {% block content %}
 
-    <div class="content">
-        <div class="row">
-                <div class="card card-chart">
-                    <div class="card-header ">
-                <div class="form-container">                       
-                        <div class="card-footer text-center">
-                        <button type="submit" class="btn btn-fill btn-primary" data-bs-toggle="modal" data-bs-target="#vendorModal" >Add Vendor</button>
-                        </div> 
-                </div>
-                
-                </div>
-                
-            </div>
-         <div>
-            
-    </div>
+<div class="content">
+  <div class="row">
+    <div class="card card-chart">
+      <div class="card-header">
+        <div class="form-container">
+          <div class="card-footer text-center">
+            <button type="button" class="btn btn-fill btn-primary" data-bs-toggle="modal" data-bs-target="#vendorModal">Add Vendor</button>
+        </div>
+            <div class="card-footer text-center">
+                <button type="button" class="btn btn-fill btn-primary" data-bs-toggle="modal" data-bs-target="#articleModal">Add Article</button>
 
-    <!-- Modal -->
-    <!-- Add Vendor Modal -->
-    <div class="modal fade" id="vendorModal" tabindex="-1" aria-labelledby="vendorModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="vendorModalLabel">Add Vendor</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="post" action="{{ url_for('home_blueprint.add_vendor') }}">
-                        {{ form.hidden_tag() }}
-                        <div class="form-group">
-                            <label for="name">Name:</label>
-                            {{ form.name(class="form-control", id="name", placeholder="Enter name") }}
-                        </div>
-                        <div class="form-group">
-                            <label for="contact">Contact:</label>
-                            {{ form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
-                        </div>
-                        <div class="form-group">
-                            <label for="location">Location:</label>
-                            {{ form.location(class="form-control", id="location", placeholder="Enter location") }}
-                        </div>
-                        
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                    </form>
-                </div>
             </div>
         </div>
+      </div>
     </div>
+  </div>
+</div>
+
+<div class="modal fade" id="vendorModal" tabindex="-1" aria-labelledby="vendorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('home_blueprint.add_vendor') }}">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            <label for="name" class="form-label">Name:</label>
+            {{ form.name(class="form-control", id="name", placeholder="Enter name") }}
+          </div>
+          <div class="form-group">
+            <label for="contact" class="form-label">Contact:</label>
+            {{ form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
+          </div>
+          <div class="form-group">
+            <label for="location" class="form-label">Location:</label>
+            {{ form.location(class="form-control", id="location", placeholder="Enter location") }}
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-secondary">Submit</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Article Modal -->
+
+<div class="modal fade" id="articleModal" tabindex="-1" aria-labelledby="articleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="{{ url_for('home_blueprint.add_vendor') }}" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="articleName" class="form-label">Article Name:</label>
+              <input type="text" id="articleName" name="articleName" class="form-control" placeholder="Enter Article Name">
+            </div>
+            <div class="form-group">
+              <label for="Category" class="form-label">Article No:</label>
+              <input type="text" id="Category" name="Category" class="form-control" placeholder="Select Category">
+            </div>
+            <div class="form-group">
+                <label for="articleNo" class="form-label">Article No:</label>
+                <input type="text" id="articleNo" name="articleNo" class="form-control" placeholder="Enter Article Number">
+              </div>
+              <div class="form-group">
+                <label for="Gender" class="form-label">Article No:</label>
+                <input type="text" id="Gender" name="Gender" class="form-control" placeholder="Select Gender">
+              </div>
+              <div class="form-group">
+                <label for="Color" class="form-label">Article No:</label>
+                <input type="text" id="Color" name="Color" class="form-control" placeholder="Enter Color">
+              </div>
+              <div class="form-group">
+                <label for="Size" class="form-label">Article No:</label>
+                <input type="text" id="Size" name="Size" class="form-control" placeholder="Enter Size">
+              </div>
+              <div class="form-group">
+                <label for="Description" class="form-label">Article No:</label>
+                <input type="text" id="Description" name="Description" class="form-control" placeholder="Enter Description">
+              </div>
+            <div class="form-group">
+              <label for="articleImages" class="form-label">Attach Images:</label>
+              <input type="file" id="articleImages" name="articleImages" class="form-control" multiple>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-secondary">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
+
+
 {% block javascripts %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script> 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        // Javascript method's body can be found in assets/js/demos.js
-        demo.initDashboardPageCharts();
-
-    });
+  $(document).ready(function () {
+    // Javascript method's body can be found in assets/js/demos.js
+    demo.initDashboardPageCharts();
+  });
 </script>
 
 {% endblock javascripts %}

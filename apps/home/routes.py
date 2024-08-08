@@ -1,20 +1,39 @@
-# -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
+from apps import db
 from apps.home import blueprint
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-
+from apps.authentication.forms import VendorForm
+from apps.authentication.models import Vendor
 
 @blueprint.route('/index')
 @login_required
 def index():
+    vendor_form = VendorForm()  # Create a new, empty form instance
+    return render_template('home/index.html', segment='index', form=vendor_form)
 
-    return render_template('home/index.html', segment='index')
+@blueprint.route('/add_vendor', methods=['POST'])
+def add_vendor():
+    vendor_form = VendorForm(request.form)
+    if vendor_form.validate_on_submit():
+        name = vendor_form.name.data
+        contact = vendor_form.contact.data
+        location = vendor_form.location.data
 
+        # Create a new vendor object
+        vendor = Vendor(name=name, contact=contact, location=location)
+
+        # Save vendor to the database
+        db.session.add(vendor)
+        db.session.commit()
+
+        # Redirect to index with a new, empty form
+        return redirect(url_for('home_blueprint.index'))
+    
+    # If form validation fails, render the template with the current form
+    return render_template('home/index.html', form=vendor_form, msg="Failed to add vendor. Please try again.")
+
+# ... (rest of the code remains the same)
 
 @blueprint.route('/<template>')
 @login_required

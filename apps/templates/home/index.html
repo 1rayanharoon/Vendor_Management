@@ -25,6 +25,7 @@
     </div>
 
     <!-- Modal -->
+    <!-- Add Vendor Modal -->
     <div class="modal fade" id="vendorModal" tabindex="-1" aria-labelledby="vendorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -33,23 +34,25 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form method="post" action="{{ url_for('home_blueprint.add_vendor') }}">
+                        {{ form.hidden_tag() }}
                         <div class="form-group">
-                            <label for="input1">Label One:</label>
-                            <input type="text" id="input1" class="form-control" placeholder="Input One">
+                            <label for="name">Name:</label>
+                            {{ form.name(class="form-control", id="name", placeholder="Enter name") }}
                         </div>
                         <div class="form-group">
-                            <label for="input2">Label Two:</label>
-                            <input type="text" id="input2" class="form-control" placeholder="Input Two">
+                            <label for="contact">Contact:</label>
+                            {{ form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
                         </div>
                         <div class="form-group">
-                            <label for="input3">Label Three:</label>
-                            <input type="text" id="input3" class="form-control" placeholder="Input Three">
+                            <label for="location">Location:</label>
+                            {{ form.location(class="form-control", id="location", placeholder="Enter location") }}
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </div>
         </div>

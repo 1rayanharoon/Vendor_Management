@@ -49,10 +49,10 @@ class Vendor(db.Model):
     name = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(100), nullable=False)
-    # Add other relevant fields as needed
 
     def __repr__(self):
-        return f"Vendor('{self.name}', '{self.location}')"
+        return f"Vendor('{self.name}', '{self.location}', '{self.contact}')"
+
 
 
 

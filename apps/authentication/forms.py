@@ -4,8 +4,10 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import Email, DataRequired
+
+
 
 # login and registration
 
@@ -31,3 +33,11 @@ class CreateAccountForm(FlaskForm):
                              validators=[DataRequired()])
     account_type = SelectField('Account Type', choices=[('Admin', 'Admin'), ('Manager', 'Manager'),('Vendor','Vendor'),('Client','Client')])  # Dropdown for account types
 
+
+
+# Add vendor form
+
+class VendorForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired()])
+    contact = StringField('Contact', validators=[DataRequired()])

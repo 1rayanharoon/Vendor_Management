@@ -5,12 +5,20 @@ from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.authentication.forms import VendorForm
 from apps.authentication.models import Vendor
+from werkzeug.utils import secure_filename
+import os
+from flask import current_app
+from apps.authentication.forms import ArticleForm
+from apps.authentication.models import Article, ArticleImage
+from sqlalchemy.exc import IntegrityError
+
 
 @blueprint.route('/index')
 @login_required
 def index():
     vendor_form = VendorForm()  # Create a new, empty form instance
-    return render_template('home/index.html', segment='index', form=vendor_form)
+    article_form = ArticleForm()
+    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form)
 
 @blueprint.route('/add_vendor', methods=['POST'])
 def add_vendor():
@@ -31,9 +39,87 @@ def add_vendor():
         return redirect(url_for('home_blueprint.index'))
     
     # If form validation fails, render the template with the current form
-    return render_template('home/index.html', form=vendor_form, msg="Failed to add vendor. Please try again.")
+    return render_template('home/index.html', vendor_form=vendor_form, article_form=ArticleForm(), msg="Failed to add vendor. Please try again.")
 
-# ... (rest of the code remains the same)
+
+@blueprint.route('/add_article', methods=['POST'])
+def add_article():
+    article_form = ArticleForm(request.form)
+    
+    if article_form.validate_on_submit():
+        # Retrieve data from the form
+        Category = article_form.Category.data
+        Product_Name = article_form.Product_Name.data
+        Article_Number = article_form.Article_Number.data
+        Gender = article_form.Gender.data
+        Color = article_form.Color.data
+        Size = article_form.Size.data
+        Description = article_form.Description.data
+
+        # Check if the article number already exists in the database
+        existing_article = Article.query.filter_by(Article_No=Article_Number).first()
+        if existing_article:
+            # If it exists, render the form with an error message
+            msg = f"Article number {Article_Number} already exists. Please choose a different number."
+            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg=msg)
+
+        # Create a new article object
+        article = Article(
+            Category=Category,
+            Product_Name=Product_Name,
+            Article_No=Article_Number,
+            Gender=Gender,
+            Color=Color,
+            Size=Size,
+            Description=Description
+        )
+
+        try:
+            # Save article to the database
+            db.session.add(article)
+            db.session.commit()
+
+            # Retrieve uploaded images
+            images = request.files.getlist(article_form.Article_images.name)
+
+            if images:
+                # Create the directory if it doesn't exist
+                image_dir = os.path.join(current_app.root_path, 'static', 'images')
+                os.makedirs(image_dir, exist_ok=True)
+
+                for image in images:
+                    if image and allowed_file(image.filename):
+                        filename = secure_filename(image.filename)
+                        image_path = os.path.join(image_dir, filename)
+                        image.save(image_path)
+                        
+                        # Create a new ArticleImage object and save to the database
+                        article_image = ArticleImage(filename=filename, article_id=article.Article_No)
+                        db.session.add(article_image)
+
+                # Commit the changes to the database
+                db.session.commit()
+
+        except IntegrityError as e:
+            db.session.rollback()
+            msg = "An error occurred while adding the article. Please try again."
+            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg=msg)
+        except Exception as e:
+            db.session.rollback()
+            msg = f"An unexpected error occurred: {str(e)}"
+            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg=msg)
+
+        # Redirect to index with a new, empty form
+        return redirect(url_for('home_blueprint.index'))
+
+    # If form validation fails, render the template with the current form
+    
+    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg="Failed to add article. Please try again.")
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 
 @blueprint.route('/<template>')
 @login_required

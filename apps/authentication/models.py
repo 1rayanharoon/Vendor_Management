@@ -52,8 +52,32 @@ class Vendor(db.Model):
 
     def __repr__(self):
         return f"Vendor('{self.name}', '{self.location}', '{self.contact}')"
+    
+
+class Article(db.Model):
+    __tablename__ = 'Articles'
+
+    Category = db.Column(db.String, nullable=False)
+    Product_Name = db.Column(db.String(100), nullable=False)
+    Article_No = db.Column(db.String(100), primary_key=True)
+    Gender = db.Column(db.String(100), nullable=False)
+    Color = db.Column(db.String(100), nullable=False)
+    Size = db.Column(db.String(100), nullable=False)
+    Description = db.Column(db.String(100), nullable=False)
+    images = db.relationship('ArticleImage', backref='article', lazy='dynamic')
 
 
+
+
+    def __repr__(self):
+        return f"Article('{self.Category}', '{self.Product_Name}', '{self.Article_No}', '{self.Gender}', '{self.Color}', '{self.Size}', '{self.Description}')"
+
+
+class ArticleImage(db.Model):
+    __tablename__ = 'ArticleImages'
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100), nullable=False)
+    article_id = db.Column(db.Integer, db.ForeignKey('Articles.Article_No'), nullable=False)
 
 
 

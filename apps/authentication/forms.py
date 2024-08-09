@@ -4,7 +4,8 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, SubmitField
+from wtforms import StringField, PasswordField, SelectField, FileField
+from flask_wtf.file import FileAllowed
 from wtforms.validators import Email, DataRequired
 
 
@@ -41,3 +42,15 @@ class VendorForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     location = StringField('Location', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
+
+
+
+class ArticleForm(FlaskForm):
+    Category = StringField('Category', validators=[DataRequired()])
+    Product_Name = StringField('Product Name', validators=[DataRequired()])
+    Article_Number = StringField('Article Number', validators=[DataRequired()])
+    Gender = StringField('Gender', validators=[DataRequired()])
+    Color = StringField('Color', validators=[DataRequired()])
+    Size = StringField('Size', validators=[DataRequired()])
+    Description = StringField('Description', validators=[DataRequired()])
+    Article_images = FileField('Images', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])  # Updated to match the template

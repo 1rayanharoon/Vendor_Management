@@ -46,11 +46,29 @@ class VendorForm(FlaskForm):
 
 
 class ArticleForm(FlaskForm):
-    Category = StringField('Category', validators=[DataRequired()])
+    Category = SelectField('Category', choices=[
+        ('Gloves', 'Gloves'),
+        ('Jackets', 'Jackets'),
+        ('Trousers', 'Trousers'),
+        ('1 Pc Suits', '1 Pc Suits'),
+        ('2 Pc Suits', '2 Pc Suits'),
+        ('Hoodies', 'Hoodies'),
+        ('T-Shirts', 'T-Shirts'),
+        ('Air Bag Vests', 'Air Bag Vests'),
+        ('Boots', 'Boots'),
+        ('Accessories', 'Accessories')
+    ], validators=[DataRequired()])
     Product_Name = StringField('Product Name', validators=[DataRequired()])
     Article_Number = StringField('Article Number', validators=[DataRequired()])
-    Gender = StringField('Gender', validators=[DataRequired()])
+    Gender = SelectField('Gender', choices=[
+        ('M', 'M'),
+        ('F', 'F'),
+        ('Y', 'Y'),
+        ('Unisex', 'Unisex')
+    ], validators=[DataRequired()])
     Color = StringField('Color', validators=[DataRequired()])
     Size = StringField('Size', validators=[DataRequired()])
     Description = StringField('Description', validators=[DataRequired()])
-    Article_images = FileField('Images', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])  # Updated to match the template
+    Article_images = FileField('Images', validators=[
+        FileAllowed(['png', 'jpg', 'jpeg'], 'Only PNG, JPG, and JPEG images are allowed!')
+    ])

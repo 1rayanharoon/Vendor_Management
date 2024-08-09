@@ -95,41 +95,39 @@
         <form method="post" action="{{ url_for('home_blueprint.add_article') }}" enctype="multipart/form-data">
           {{ article_form.hidden_tag() }}
           <div class="form-group">
-            <label for="Category" class="form-label">Category</label>
-            {{ article_form.Category(class="form-control", id="Category") }}
+              <label for="Category">Category</label>
+              {{ article_form.Category(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="Product_Name" class="form-label">Product Name</label>
-            {{ article_form.Product_Name(class="form-control", id="Product_Name") }}
+              <label for="Product_Name">Product Name</label>
+              {{ article_form.Product_Name(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="Article_Number" class="form-label">Article No:</label>
-            {{ article_form.Article_Number(class="form-control", id="Article_Number") }}
+              <label for="Article_Number">Article Number</label>
+              {{ article_form.Article_Number(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="Gender" class="form-label">Gender</label>
-            {{ article_form.Gender(class="form-control", id="Gender") }}
+              <label for="Gender">Gender</label>
+              {{ article_form.Gender(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="Color" class="form-label">Color</label>
-            {{ article_form.Color(class="form-control", id="Color") }}
+              <label for="Color">Color</label>
+              {{ article_form.Color(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="Size" class="form-label">Size</label>
-            {{ article_form.Size(class="form-control", id="Size") }}
+              <label for="Size">Size</label>
+              {{ article_form.Size(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="Description" class="form-label">Description</label>
-            {{ article_form.Description(class="form-control", id="Description") }}
+              <label for="Description">Description</label>
+              {{ article_form.Description(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="articleImages" class="form-label">Images</label>
-            {{ article_form.Article_images(class="form-control", id="articleImages", multiple=true) }}
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-secondary">Submit</button>
-          </div>
-        </form>
+            <label for="Article_images">Images</label>
+            {{ article_form.Article_images(class="form-control", id="Article_images", accept=".png, .jpg, .jpeg", multiple=True) }}
+        </div>        
+          <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
       </div>
     </div>
   </div>

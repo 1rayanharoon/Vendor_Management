@@ -41,7 +41,6 @@ def add_vendor():
     # If form validation fails, render the template with the current form
     return render_template('home/index.html', vendor_form=vendor_form, article_form=ArticleForm(), msg="Failed to add vendor. Please try again.")
 
-
 @blueprint.route('/add_article', methods=['POST'])
 def add_article():
     article_form = ArticleForm(request.form)
@@ -59,7 +58,6 @@ def add_article():
         # Check if the article number already exists in the database
         existing_article = Article.query.filter_by(Article_No=Article_Number).first()
         if existing_article:
-            # If it exists, render the form with an error message
             msg = f"Article number {Article_Number} already exists. Please choose a different number."
             return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg=msg)
 
@@ -83,18 +81,19 @@ def add_article():
             images = request.files.getlist(article_form.Article_images.name)
 
             if images:
-                # Create the directory if it doesn't exist
-                image_dir = os.path.join(current_app.root_path, 'static', 'images')
-                os.makedirs(image_dir, exist_ok=True)
+                # Create the article-specific directory
+                article_dir = os.path.join(current_app.root_path, 'static', 'images', secure_filename(Product_Name))
+                os.makedirs(article_dir, exist_ok=True)
 
                 for image in images:
                     if image and allowed_file(image.filename):
                         filename = secure_filename(image.filename)
-                        image_path = os.path.join(image_dir, filename)
+                        image_path = os.path.join(article_dir, filename)
                         image.save(image_path)
                         
                         # Create a new ArticleImage object and save to the database
-                        article_image = ArticleImage(filename=filename, article_id=article.Article_No)
+                        relative_path = os.path.join('images', secure_filename(Product_Name), filename)
+                        article_image = ArticleImage(filename=relative_path, article_id=article.Article_No)
                         db.session.add(article_image)
 
                 # Commit the changes to the database
@@ -113,10 +112,10 @@ def add_article():
         return redirect(url_for('home_blueprint.index'))
 
     # If form validation fails, render the template with the current form
-    
     return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg="Failed to add article. Please try again.")
+
 def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 

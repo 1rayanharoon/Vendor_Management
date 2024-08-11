@@ -12,13 +12,23 @@ from apps.authentication.forms import ArticleForm
 from apps.authentication.models import Article, ArticleImage
 from sqlalchemy.exc import IntegrityError
 
+def image_files(article_name):
+    image_folder = os.path.join('apps', 'static', 'images', article_name)
+    if os.path.exists(image_folder):
+        return [f for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f))]
+    return []
 
 @blueprint.route('/index')
 @login_required
 def index():
     vendor_form = VendorForm()  # Create a new, empty form instance
     article_form = ArticleForm()
-    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form)
+    vendors = Vendor.query.all()  # Fetch all vendors from the database
+    articles = Article.query.all()
+    # db.session.query(Article).delete()
+    # db.session.commit()
+    print(image_files("haroons"))
+    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,vendors=vendors,articles=articles,image_files=image_files)
 
 @blueprint.route('/add_vendor', methods=['POST'])
 def add_vendor():

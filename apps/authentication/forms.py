@@ -42,6 +42,9 @@ class VendorForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     location = StringField('Location', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
+    business_type = StringField('Business Type', validators=[DataRequired()])
+    country = StringField('Country', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
 
 
 
@@ -72,3 +75,12 @@ class ArticleForm(FlaskForm):
     Article_images = FileField('Images', validators=[
         FileAllowed(['png', 'jpg', 'jpeg'], 'Only PNG, JPG, and JPEG images are allowed!')
     ])
+
+
+class ClientForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired()])
+    contact = StringField('Contact', validators=[DataRequired()])
+    business_type = StringField('Business Type', validators=[DataRequired()])
+    country = StringField('Country', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])

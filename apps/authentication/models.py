@@ -49,9 +49,11 @@ class Vendor(db.Model):
     name = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(100), nullable=False)
-
+    business_type = db.Column(db.String(100), nullable=False)
+    country = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
     def __repr__(self):
-        return f"Vendor('{self.name}', '{self.location}', '{self.contact}')"
+        return f"Vendor('{self.name}', '{self.location}', '{self.contact}, '{self.business_type}', '{self.country}', '{self.email}')"
     
 
 class Article(db.Model):
@@ -66,9 +68,6 @@ class Article(db.Model):
     Description = db.Column(db.String(100), nullable=False)
     images = db.relationship('ArticleImage', backref='article', lazy='dynamic')
 
-
-
-
     def __repr__(self):
         return f"Article('{self.Category}', '{self.Product_Name}', '{self.Article_No}', '{self.Gender}', '{self.Color}', '{self.Size}', '{self.Description}')"
 
@@ -78,6 +77,19 @@ class ArticleImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100), nullable=False)
     article_id = db.Column(db.Integer, db.ForeignKey('Articles.Article_No'), nullable=False)
+
+class Client(db.Model):
+    __tablename__ = 'Clients'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    contact = db.Column(db.String(100), nullable=False)
+    business_type = db.Column(db.String(100), nullable=False)
+    country = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    def __repr__(self):
+        return f"Clients('{self.name}', '{self.location}', '{self.contact}, '{self.business_type}', '{self.country}', '{self.email}')"
 
 
 

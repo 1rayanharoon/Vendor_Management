@@ -23,7 +23,7 @@
     border-color: #6c757d;  /* Focused Input Field Border */
     box-shadow: none; /* Remove default focus shadow */
   }
-  .form-label {
+  .form-lclient{
     color: #dee2e6; /* Label Text */
   }
 
@@ -64,16 +64,22 @@ img:fullscreen {
                   <thead class=" text-primary">
                       <tr>
                           <th>Name</th>
-                          <th>Contact</th>
                           <th>Location</th>
+                          <th>Contact</th>
+                          <th>Business Type</th>
+                          <th>Country</th>
+                          <th>Email</th>
                       </tr>
                   </thead>
                   <tbody>
                     {% for vendor in vendors %}
                     <tr>
                         <td>{{ vendor.name }}</td>
-                        <td>{{ vendor.contact }}</td>
                         <td>{{ vendor.location }}</td>
+                        <td>{{ vendor.contact }}</td>
+                        <td>{{ vendor.business_type }}</td>
+                        <td>{{ vendor.country }}</td>
+                        <td>{{ vendor.email }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -127,8 +133,42 @@ img:fullscreen {
           </div>
       </div>
     </div>
-    
-  
+    <div class="card">
+      <div class="card-header">
+          <h4 class="card-title">Clients</h4>
+      </div>
+      <div class="card-body">
+          <div class="table-responsive">
+              <table class="table">
+                  <thead class=" text-primary">
+                      <tr>
+                          <th>Name</th>
+                          <th>Location</th>
+                          <th>Contact</th>
+                          <th>Business Type</th>
+                          <th>Country</th>
+                          <th>Email</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.location }}</td>
+                        <td>{{ client.contact }}</td>
+                        <td>{{ client.business_type }}</td>
+                        <td>{{ client.country }}</td>
+                        <td>{{ client.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+              <div class="card-footer text-center">
+                <button type="button" class="btn btn-fill btn-primary" data-bs-toggle="modal" data-bs-target="#clientModal">Add Client</button>
+              </div>
+          </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -146,12 +186,24 @@ img:fullscreen {
             {{ vendor_form.name(class="form-control", id="name", placeholder="Enter name") }}
           </div>
           <div class="form-group">
+            <label for="location" class="form-label">Location:</label>
+            {{ vendor_form.location(class="form-control", id="location", placeholder="Enter location") }}
+          </div>
+          <div class="form-group">
             <label for="contact" class="form-label">Contact:</label>
             {{ vendor_form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
           </div>
           <div class="form-group">
-            <label for="location" class="form-label">Location:</label>
-            {{ vendor_form.location(class="form-control", id="location", placeholder="Enter location") }}
+            <label for="business_type" class="form-label">Business Type:</label>
+            {{ vendor_form.business_type(class="form-control", id="business_type", placeholder="Enter Business Type") }}
+          </div>
+          <div class="form-group">
+            <label for="country" class="form-label">Country:</label>
+            {{ vendor_form.country(class="form-control", id="country", placeholder="Enter country") }}
+          </div>
+          <div class="form-group">
+            <label for="email" class="form-label">Email:</label>
+            {{ vendor_form.email(class="form-control", id="email", placeholder="Enter email") }}
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-secondary">Submit</button>
@@ -233,6 +285,49 @@ img:fullscreen {
   </div>
 </div>
 {% endfor %}
+
+<div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('home_blueprint.add_client') }}">
+          {{ client_form.hidden_tag() }}
+          <div class="form-group">
+            <label for="name" class="form-label">Name:</label>
+            {{ client_form.name(class="form-control", id="name", placeholder="Enter name") }}
+          </div>
+          <div class="form-group">
+            <label for="location" class="form-label">Location:</label>
+            {{ client_form.location(class="form-control", id="location", placeholder="Enter location") }}
+          </div>
+          <div class="form-group">
+            <label for="contact" class="form-label">Contact:</label>
+            {{ client_form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
+          </div>
+          <div class="form-group">
+            <label for="business_type" class="form-label">Business Type:</label>
+            {{ client_form.business_type(class="form-control", id="business_type", placeholder="Enter Business Type") }}
+          </div>
+          <div class="form-group">
+            <label for="country" class="form-label">Country:</label>
+            {{ client_form.country(class="form-control", id="country", placeholder="Enter country") }}
+          </div>
+          <div class="form-group">
+            <label for="email" class="form-label">Email:</label>
+            {{ client_form.email(class="form-control", id="email", placeholder="Enter email") }}
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-secondary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 {% endblock content %}
 

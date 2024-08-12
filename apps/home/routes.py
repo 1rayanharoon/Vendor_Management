@@ -11,6 +11,8 @@ from flask import current_app
 from apps.authentication.forms import ArticleForm
 from apps.authentication.models import Article, ArticleImage
 from sqlalchemy.exc import IntegrityError
+from apps.authentication.forms import ClientForm
+from apps.authentication.models import Client
 
 def image_files(article_name):
     image_folder = os.path.join('apps', 'static', 'images', article_name)
@@ -23,23 +25,28 @@ def image_files(article_name):
 def index():
     vendor_form = VendorForm()  # Create a new, empty form instance
     article_form = ArticleForm()
+    client_form = ClientForm()
     vendors = Vendor.query.all()  # Fetch all vendors from the database
     articles = Article.query.all()
+    clients= Client.query.all()
     # db.session.query(Article).delete()
     # db.session.commit()
     print(image_files("haroons"))
-    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,vendors=vendors,articles=articles,image_files=image_files)
+    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,client_form=client_form, vendors=vendors,articles=articles, clients=clients, image_files=image_files)
 
 @blueprint.route('/add_vendor', methods=['POST'])
 def add_vendor():
     vendor_form = VendorForm(request.form)
     if vendor_form.validate_on_submit():
         name = vendor_form.name.data
-        contact = vendor_form.contact.data
         location = vendor_form.location.data
+        contact = vendor_form.contact.data
+        business_type = vendor_form.business_type.data
+        country = vendor_form.country.data
+        email= vendor_form.email.data
 
         # Create a new vendor object
-        vendor = Vendor(name=name, contact=contact, location=location)
+        vendor = Vendor(name=name, location=location, contact=contact, business_type=business_type, country=country, email=email)
 
         # Save vendor to the database
         db.session.add(vendor)
@@ -49,7 +56,7 @@ def add_vendor():
         return redirect(url_for('home_blueprint.index'))
     
     # If form validation fails, render the template with the current form
-    return render_template('home/index.html', vendor_form=vendor_form, article_form=ArticleForm(), msg="Failed to add vendor. Please try again.")
+    return render_template('home/index.html', vendor_form=vendor_form, article_form=ArticleForm(), client_form=ClientForm(), msg="Failed to add vendor. Please try again.")
 
 @blueprint.route('/add_article', methods=['POST'])
 def add_article():
@@ -69,7 +76,7 @@ def add_article():
         existing_article = Article.query.filter_by(Article_No=Article_Number).first()
         if existing_article:
             msg = f"Article number {Article_Number} already exists. Please choose a different number."
-            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg=msg)
+            return render_template('home/index.html', vendor_form=VendorForm(), client_form=ClientForm(), article_form=article_form, msg=msg)
 
         # Create a new article object
         article = Article(
@@ -112,21 +119,56 @@ def add_article():
         except IntegrityError as e:
             db.session.rollback()
             msg = "An error occurred while adding the article. Please try again."
-            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg=msg)
+            return render_template('home/index.html', vendor_form=VendorForm(), client_form=ClientForm(), article_form=article_form, msg=msg)
         except Exception as e:
             db.session.rollback()
             msg = f"An unexpected error occurred: {str(e)}"
-            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg=msg)
+            return render_template('home/index.html', vendor_form=VendorForm(),client_form=ClientForm(), article_form=article_form, msg=msg)
 
         # Redirect to index with a new, empty form
         return redirect(url_for('home_blueprint.index'))
 
     # If form validation fails, render the template with the current form
-    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, msg="Failed to add article. Please try again.")
+    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, clientform=ClientForm(), msg="Failed to add article. Please try again.")
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@blueprint.route('/add_client', methods=['POST'])
+def add_client():
+    client_form = ClientForm(request.form)
+    if client_form.validate_on_submit():
+        print("Form validation passed")
+    else:
+        print("Form validation failed:", client_form.errors)
+
+        name = client_form.name.data
+        location = client_form.location.data
+        contact = client_form.contact.data
+        business_type = client_form.business_type.data
+        country = client_form.country.data
+        email= client_form.email.data
+
+        # Create a new client object
+        client = Client(name=name, location=location, contact=contact, business_type=business_type, country=country, email=email)
+
+        # Save client to the database
+        db.session.add(client)
+        try:
+            db.session.commit()
+        except Exception as e:
+            print(f"Error committing to database: {e}")
+            db.session.rollback()
+
+
+        # Redirect to index with a new, empty form
+        return redirect(url_for('home_blueprint.index'))
+    
+    # If form validation fails, render the template with the current form
+    return render_template('home/index.html', client_form=client_form, vendor_form=VendorForm(), article_form=ArticleForm(),  msg="Failed to add client. Please try again.")
+
 
 
 

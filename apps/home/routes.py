@@ -1,7 +1,8 @@
 from apps import db
 from apps.home import blueprint
-from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_required
+from flask import render_template, request, redirect, url_for, flash,session
+from flask_login import login_required,logout_user
+from functools import wraps
 from jinja2 import TemplateNotFound
 from apps.authentication.forms import VendorForm
 from apps.authentication.models import Vendor
@@ -14,6 +15,22 @@ from sqlalchemy.exc import IntegrityError
 from apps.authentication.forms import ClientForm
 from apps.authentication.models import Client
 
+def check_account_type(*allowed_types):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Check if 'account_type' is in session and is one of the allowed types
+            if 'account_type' in session and session['account_type'] in allowed_types:
+                return f(*args, **kwargs)
+            else:
+                # Here, handle the case where the condition is not met
+                # This could be a simple return statement or logging the event
+                logout_user()
+                return redirect(url_for('home_blueprint.index'))
+
+        return decorated_function
+    return decorator
+
 def image_files(article_name):
     image_folder = os.path.join('apps', 'static', 'images', article_name)
     if os.path.exists(image_folder):
@@ -22,6 +39,7 @@ def image_files(article_name):
 
 @blueprint.route('/index')
 @login_required
+@check_account_type('Admin', 'superuser')
 def index():
     vendor_form = VendorForm()  # Create a new, empty form instance
     article_form = ArticleForm()
@@ -31,7 +49,6 @@ def index():
     clients= Client.query.all()
     # db.session.query(Article).delete()
     # db.session.commit()
-    print(image_files("haroons"))
     return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,client_form=client_form, vendors=vendors,articles=articles, clients=clients, image_files=image_files)
 
 @blueprint.route('/add_vendor', methods=['POST'])

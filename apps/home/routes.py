@@ -39,7 +39,7 @@ def image_files(article_name):
 
 @blueprint.route('/index')
 @login_required
-@check_account_type('Admin', 'superuser')
+@check_account_type('Admin', 'Vendor', 'Manager', 'Client')
 def index():
     vendor_form = VendorForm()  # Create a new, empty form instance
     article_form = ArticleForm()
@@ -49,7 +49,7 @@ def index():
     clients= Client.query.all()
     # db.session.query(Article).delete()
     # db.session.commit()
-    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,client_form=client_form, vendors=vendors,articles=articles, clients=clients, image_files=image_files)
+    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,client_form=client_form, vendors=vendors,articles=articles, clients=clients, image_files=image_files, session=session)
 
 @blueprint.route('/add_vendor', methods=['POST'])
 def add_vendor():

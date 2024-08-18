@@ -42,6 +42,7 @@ img:fullscreen {
 {% endblock stylesheets %}
 
 {% block content %}
+{% if session['account_type'] == 'Admin' or session['account_type'] == 'Manager' %}
 
 <div class="content">
   <div class="row">
@@ -327,6 +328,62 @@ img:fullscreen {
     </div>
   </div>
 </div>
+
+{% elif session['account_type'] == 'Client' %}
+<div class="content">
+  <div class="row">
+    
+    <div class="card">
+      <div class="card-header">
+          <h4 class="card-title">Articles</h4>
+      </div>
+      <div class="card-body">
+          <div class="table-responsive">
+              <table class="table">
+                  <thead class=" text-primary">
+                      <tr>
+                          <th>Category</th>
+                          <th>Product Name</th>
+                          <th>Article Number</th>
+                          <th>Gender</th>
+                          <th>Color</th>
+                          <th>Size</th>
+                          <th>Description</th>
+                          <th>View Images</th>
+
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {% for article in articles %}
+                    <tr>
+                        <td>{{ article.Category }}</td>
+                        <td>{{ article.Product_Name }}</td>
+                        <td>{{ article.Article_No }}</td>
+                        <td>{{ article.Gender }}</td>
+                        <td>{{ article.Color }}</td>
+                        <td>{{ article.Size }}</td>
+                        <td>{{ article.Description }}</td>
+                        <td>
+                          <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#imageModal{{ article.Article_No }}">View Images</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+              <div class="card-footer text-center">
+                <button type="button" class="btn btn-fill btn-primary" data-bs-toggle="modal" data-bs-target="#articleModal">Add Article</button>
+              </div>
+          </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+{% elif session['account_type'] == 'Vendor' %}
+ <p></p>
+
+{% endif %}
 
 
 {% endblock content %}

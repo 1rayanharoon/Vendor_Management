@@ -10,13 +10,25 @@
                 </a>
                 <a href="javascript:void(0)" class="simple-text logo-normal">Dashboard</a>
             </div>
+            {% if session['account_type'] == 'Admin' or session['account_type'] == 'Manager' %}
+                <ul class="nav">
+                    <li class="{% if 'index' in segment %} active {% endif %} ">
+                        <a href="/">
+                            <i class="tim-icons icon-chart-pie-36"></i>
+                            <p>Manage</p>
+                        </a>
+                    </li>
+            {% else %}
             <ul class="nav">
                 <li class="{% if 'index' in segment %} active {% endif %} ">
                     <a href="/">
                         <i class="tim-icons icon-chart-pie-36"></i>
-                        <p>Manage</p>
+                        <p>Test</p>
                     </a>
                 </li>
+
+            {% endif %}
+
                 <!-- <li class="{% if 'user' in segment %} active {% endif %}">
                     <a href="/user.html">
                         <i class="tim-icons icon-single-02"></i>

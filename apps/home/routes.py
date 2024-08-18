@@ -1,6 +1,6 @@
 from apps import db
 from apps.home import blueprint
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.authentication.forms import VendorForm
@@ -38,22 +38,31 @@ def index():
 def add_vendor():
     vendor_form = VendorForm(request.form)
     if vendor_form.validate_on_submit():
-        name = vendor_form.name.data
-        location = vendor_form.location.data
-        contact = vendor_form.contact.data
-        business_type = vendor_form.business_type.data
-        country = vendor_form.country.data
-        email= vendor_form.email.data
+        try:
+            vendor = Vendor(
+                name=vendor_form.name.data,
+                location=vendor_form.location.data,
+                contact=vendor_form.contact.data,
+                business_type=vendor_form.business_type.data,
+                country=vendor_form.country.data,
+                email=vendor_form.email.data
+            )
 
-        # Create a new vendor object
-        vendor = Vendor(name=name, location=location, contact=contact, business_type=business_type, country=country, email=email)
+            db.session.add(vendor)
+            db.session.commit()
+            flash('Vendor added successfully', 'success')
+            current_app.logger.info(f"Vendor {vendor.name} added successfully")
+        except Exception as e:
+            db.session.rollback()
+            flash('Error adding Vendor. Please try again.', 'error')
+            current_app.logger.error(f"Error adding Vendor: {str(e)}")
+    else:
+        for field, errors in vendor_form.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", 'error')
+                current_app.logger.warning(f"Form validation error in {field}: {error}")
 
-        # Save vendor to the database
-        db.session.add(vendor)
-        db.session.commit()
-
-        # Redirect to index with a new, empty form
-        return redirect(url_for('home_blueprint.index'))
+    return redirect(url_for('home_blueprint.index'))
     
     # If form validation fails, render the template with the current form
     return render_template('home/index.html', vendor_form=vendor_form, article_form=ArticleForm(), client_form=ClientForm(), msg="Failed to add vendor. Please try again.")
@@ -76,7 +85,7 @@ def add_article():
         existing_article = Article.query.filter_by(Article_No=Article_Number).first()
         if existing_article:
             msg = f"Article number {Article_Number} already exists. Please choose a different number."
-            return render_template('home/index.html', vendor_form=VendorForm(), client_form=ClientForm(), article_form=article_form, msg=msg)
+            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, client_form=ClientForm(), msg=msg)
 
         # Create a new article object
         article = Article(
@@ -140,31 +149,31 @@ def allowed_file(filename):
 def add_client():
     client_form = ClientForm(request.form)
     if client_form.validate_on_submit():
-        print("Form validation passed")
-    else:
-        print("Form validation failed:", client_form.errors)
-
-        name = client_form.name.data
-        location = client_form.location.data
-        contact = client_form.contact.data
-        business_type = client_form.business_type.data
-        country = client_form.country.data
-        email= client_form.email.data
-
-        # Create a new client object
-        client = Client(name=name, location=location, contact=contact, business_type=business_type, country=country, email=email)
-
-        # Save client to the database
-        db.session.add(client)
         try:
+            client = Client(
+                name=client_form.name.data,
+                location=client_form.location.data,
+                contact=client_form.contact.data,
+                business_type=client_form.business_type.data,
+                country=client_form.country.data,
+                email=client_form.email.data
+            )
+
+            db.session.add(client)
             db.session.commit()
+            flash('Client added successfully', 'success')
+            current_app.logger.info(f"Client {client.name} added successfully")
         except Exception as e:
-            print(f"Error committing to database: {e}")
             db.session.rollback()
+            flash('Error adding client. Please try again.', 'error')
+            current_app.logger.error(f"Error adding client: {str(e)}")
+    else:
+        for field, errors in client_form.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", 'error')
+                current_app.logger.warning(f"Form validation error in {field}: {error}")
 
-
-        # Redirect to index with a new, empty form
-        return redirect(url_for('home_blueprint.index'))
+    return redirect(url_for('home_blueprint.index'))
     
     # If form validation fails, render the template with the current form
     return render_template('home/index.html', client_form=client_form, vendor_form=VendorForm(), article_form=ArticleForm(),  msg="Failed to add client. Please try again.")

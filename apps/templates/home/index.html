@@ -170,8 +170,42 @@ img:fullscreen {
           </div>
       </div>
     </div>
+    <div class="card">
+      <div class="card-header">
+          <h4 class="card-title">Inspector</h4>
+      </div>
+      <div class="card-body">
+          <div class="table-responsive">
+              <table class="table">
+                  <thead class=" text-primary">
+                      <tr>
+                          <th>Name</th>
+                          <th>Location</th>
+                          <th>Contact</th>
+                          <th>Email</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {% for inspector in inspector %}
+                    <tr>
+                        <td>{{ inspector.name }}</td>
+                        <td>{{ inspector.location }}</td>
+                        <td>{{ inspector.contact }}</td>
+                        <td>{{ inspector.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+              <div class="card-footer text-center">
+                <button type="button" class="btn btn-fill btn-primary" data-bs-toggle="modal" data-bs-target="#inspectorModal">Add Inspector</button>
+              </div>
+          </div>
+      </div>
+    </div>
   </div>
 </div>
+
+
 
 <div class="modal fade" id="vendorModal" tabindex="-1" aria-labelledby="vendorModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -329,6 +363,42 @@ img:fullscreen {
   </div>
 </div>
 
+<!-- Inpector Modal -->
+<div class="modal fade" id="inspectorModal" tabindex="-1" aria-labelledby="inspectorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ url_for('home_blueprint.add_inspector') }}">
+          {{ inspector_form.hidden_tag() }}
+          <div class="form-group">
+            <label for="name" class="form-label">Name:</label>
+            {{ inspector_form.name(class="form-control", id="name", placeholder="Enter name") }}
+          </div>
+          <div class="form-group">
+            <label for="location" class="form-label">Location:</label>
+            {{ inspector_form.location(class="form-control", id="location", placeholder="Enter location") }}
+          </div>
+          <div class="form-group">
+            <label for="contact" class="form-label">Contact:</label>
+            {{ inspector_form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
+          </div>
+          <div class="form-group">
+            <label for="email" class="form-label">Email:</label>
+            {{ inspector_form.email(class="form-control", id="email", placeholder="Enter email") }}
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-secondary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Inpector Modal -->
+
 {% elif session['account_type'] == 'Client' %}
 <div class="content">
   <div class="row">
@@ -380,7 +450,7 @@ img:fullscreen {
   </div>
 </div>
 
-{% elif session['account_type'] == 'Vendor' %}
+{% elif session['account_type'] == 'Vendor' or session['account_type']=='Inspector' %}
  <p></p>
 
 {% endif %}

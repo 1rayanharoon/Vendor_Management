@@ -32,7 +32,7 @@ class CreateAccountForm(FlaskForm):
     password = PasswordField('Password',
                              id='pwd_create',
                              validators=[DataRequired()])
-    account_type = SelectField('Account Type', choices=[('Admin', 'Admin'), ('Manager', 'Manager'),('Vendor','Vendor'),('Client','Client')])  # Dropdown for account types
+    account_type = SelectField('Account Type', choices=[('Admin', 'Admin'), ('Manager', 'Manager'),('Vendor','Vendor'),('Client','Client'), ('Inspector','Inspector')])  # Dropdown for account types
 
 
 
@@ -83,4 +83,10 @@ class ClientForm(FlaskForm):
     contact = StringField('Contact', validators=[DataRequired()])
     business_type = StringField('Business Type', validators=[DataRequired()])
     country = StringField('Country', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+
+class InspectorForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired()])
+    contact = StringField('Contact', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])

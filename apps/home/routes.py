@@ -9,8 +9,8 @@ from apps.authentication.models import Vendor
 from werkzeug.utils import secure_filename
 import os
 from flask import current_app
-from apps.authentication.forms import ArticleForm
-from apps.authentication.models import Article, ArticleImage
+from apps.authentication.forms import ArticleForm, InspectorForm
+from apps.authentication.models import Article, ArticleImage, Inspector
 from sqlalchemy.exc import IntegrityError
 from apps.authentication.forms import ClientForm
 from apps.authentication.models import Client
@@ -39,17 +39,20 @@ def image_files(article_name):
 
 @blueprint.route('/index')
 @login_required
-@check_account_type('Admin', 'Vendor', 'Manager', 'Client')
+@check_account_type('Admin', 'Vendor', 'Manager', 'Client', 'Inspector')
 def index():
     vendor_form = VendorForm()  # Create a new, empty form instance
     article_form = ArticleForm()
     client_form = ClientForm()
+    inspector_form = InspectorForm()
     vendors = Vendor.query.all()  # Fetch all vendors from the database
     articles = Article.query.all()
     clients= Client.query.all()
+    inspectors = Inspector.query.all()
+    
     # db.session.query(Article).delete()
     # db.session.commit()
-    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,client_form=client_form, vendors=vendors,articles=articles, clients=clients, image_files=image_files, session=session)
+    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,client_form=client_form, inspector_form=inspector_form, vendors=vendors,articles=articles, clients=clients,inspectors=inspectors, image_files=image_files, session=session)
 
 @blueprint.route('/add_vendor', methods=['POST'])
 def add_vendor():
@@ -155,7 +158,7 @@ def add_article():
         return redirect(url_for('home_blueprint.index'))
 
     # If form validation fails, render the template with the current form
-    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, clientform=ClientForm(), msg="Failed to add article. Please try again.")
+    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, clientform=ClientForm(),inspector_form=InspectorForm(), msg="Failed to add article. Please try again.")
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -193,10 +196,39 @@ def add_client():
     return redirect(url_for('home_blueprint.index'))
     
     # If form validation fails, render the template with the current form
-    return render_template('home/index.html', client_form=client_form, vendor_form=VendorForm(), article_form=ArticleForm(),  msg="Failed to add client. Please try again.")
+    return render_template('home/index.html', client_form=client_form, vendor_form=VendorForm(), article_form=ArticleForm(), inspector_form=InspectorForm(),  msg="Failed to add client. Please try again.")
 
 
+@blueprint.route('/add_inspector', methods=['POST'])
+def add_inspector():
+    inspector_form = InspectorForm(request.form)
+    if inspector_form.validate_on_submit():
+        try:
+            inspector = Inspector(
+                name=inspector_form.name.data,
+                location=inspector_form.location.data,
+                contact=inspector_form.contact.data,
+                email=inspector_form.email.data
+            )
 
+            db.session.add(inspector)
+            db.session.commit()
+            flash('Inspector added successfully', 'success')
+            current_app.logger.info(f"Inspector {inspector.name} added successfully")
+        except Exception as e:
+            db.session.rollback()
+            flash('Error adding inspector. Please try again.', 'error')
+            current_app.logger.error(f"Error adding inspector: {str(e)}")
+    else:
+        for field, errors in inspector_form.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", 'error')
+                current_app.logger.warning(f"Form validation error in {field}: {error}")
+
+    return redirect(url_for('home_blueprint.index'))
+    
+    # If form validation fails, render the template with the current form
+    return render_template('home/index.html', inspector_form=inspector_form, vendor_form=VendorForm(), article_form=ArticleForm(),client_form=ClientForm(),  msg="Failed to add inspector. Please try again.")
 
 @blueprint.route('/<template>')
 @login_required

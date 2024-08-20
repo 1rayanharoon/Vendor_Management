@@ -18,14 +18,21 @@
                             <p>Manage</p>
                         </a>
                     </li>
-            {% else %}
+                    <li class="{% if 'user' in segment %} active {% endif %}">
+                        <a href="{{ url_for('authentication_blueprint.register') }}">
+                            <i class="tim-icons icon-single-02"></i>
+                            <p>Register User</p>
+                        </a>
+            {% elif session['account_type'] == 'Manager' %}
             <ul class="nav">
                 <li class="{% if 'index' in segment %} active {% endif %} ">
                     <a href="/">
                         <i class="tim-icons icon-chart-pie-36"></i>
-                        <p>Test</p>
+                        <p>Manage</p>
                     </a>
                 </li>
+            
+            {% elif session['account_type'] == 'Vendor' or session['account_type']=='Client' or session['account_type']=='Inspector'  %}
 
             {% endif %}
 

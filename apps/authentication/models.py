@@ -92,7 +92,16 @@ class Client(db.Model):
         return f"Clients('{self.name}', '{self.location}', '{self.contact}, '{self.business_type}', '{self.country}', '{self.email}')"
 
 
+class Inspector(db.Model):
+    __tablename__ = 'Inspector'
 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    contact = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    def __repr__(self):
+        return f"Inspector('{self.name}', '{self.location}', '{self.contact}', '{self.email}')"
 
 @login_manager.user_loader
 def user_loader(id):

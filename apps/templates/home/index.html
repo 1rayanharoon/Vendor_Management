@@ -290,10 +290,14 @@ img:fullscreen {
           </div>
           <div class="form-group">
             <label for="Article_images">Images</label>
-            {{ article_form.Article_images(class="form-control", id="Article_images", accept=".png, .jpg, .jpeg", multiple=True) }}
-        </div>        
+            {{ article_form.Article_images(class="form-control", id="Article_images", accept=".png, .jpg, .jpeg", multiple=True, onchange="previewImages()") }}
+          </div>
+          <div class="form-group">
+            <label>Preview:</label>
+            <div id="imagePreview" class="d-flex flex-wrap"></div>
+          </div>
           <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+        </form>
       </div>
     </div>
   </div>
@@ -472,6 +476,7 @@ img:fullscreen {
     demo.initDashboardPageCharts();
   });
 
+
   function openFullscreen(img) {
   if (img.requestFullscreen) {
     img.requestFullscreen();
@@ -483,6 +488,29 @@ img:fullscreen {
     img.msRequestFullscreen();
   }
 }
+
+function previewImages() {
+    var preview = document.getElementById('imagePreview');
+    preview.innerHTML = ''; // Clear previous images
+    var files = document.getElementById('Article_images').files;
+    
+    if (files) {
+      Array.from(files).forEach(function(file) {
+        var reader = new FileReader();
+        
+        reader.onload = function(event) {
+          var img = document.createElement('img');
+          img.src = event.target.result;
+          img.classList.add('img-fluid', 'm-2');
+          img.style.maxWidth = '100px';
+          img.style.maxHeight = '100px';
+          preview.appendChild(img);
+        }
+        
+        reader.readAsDataURL(file);
+      });
+    }
+  }
 
 </script>
 

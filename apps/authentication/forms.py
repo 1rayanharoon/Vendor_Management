@@ -9,10 +9,6 @@ from flask_wtf.file import FileAllowed
 from wtforms.validators import Email, DataRequired
 
 
-
-# login and registration
-
-
 class LoginForm(FlaskForm):
     username = StringField('Username',
                          id='username_login',
@@ -39,13 +35,17 @@ class CreateAccountForm(FlaskForm):
 # Add vendor form
 
 class VendorForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired()])
-    location = StringField('Location', validators=[DataRequired()])
-    contact = StringField('Contact', validators=[DataRequired()])
-    business_type = StringField('Business Type', validators=[DataRequired()])
-    country = StringField('Country', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-
+    name = StringField('Vendor Name', validators=[DataRequired()])
+    address = StringField('Vendor Address', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    contact_person_name = StringField('Contact Person Name', validators=[DataRequired()])
+    designation = StringField('Designation of Contact Person', validators=[DataRequired()])
+    contact_number = StringField('Contact Number of Contact Person', validators=[DataRequired()])
+    phone_number = StringField('Phone Number of Contact Person', validators=[DataRequired()])
+    head_name = StringField('Name of Head of Organization', validators=[DataRequired()])
+    head_designation = StringField('Designation of Head of Organization', validators=[DataRequired()])
+    head_email = StringField('Email of Head of Organization', validators=[Email(), DataRequired()])
+    head_phone_number = StringField('Phone Number of Head of Organization', validators=[DataRequired()])
 
 
 class ArticleForm(FlaskForm):
@@ -77,13 +77,20 @@ class ArticleForm(FlaskForm):
     ])
 
 
+
+
 class ClientForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    location = StringField('Location', validators=[DataRequired()])
-    contact = StringField('Contact', validators=[DataRequired()])
-    business_type = StringField('Business Type', validators=[DataRequired()])
-    country = StringField('Country', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    address = StringField('Address')
+    city = StringField('City')
+    contact_person_name = StringField('Contact Person Name')
+    designation = StringField('Designation of Contact Person')
+    contact_number = StringField('Contact Number')
+    phone_number = StringField('Phone Number')
+    head_name = StringField('Head of Organization Name')
+    head_designation = StringField('Head Designation')
+    head_email = StringField('Head Email', validators=[Email()])
+    head_phone_number = StringField('Head Phone Number')
 
 class InspectorForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])

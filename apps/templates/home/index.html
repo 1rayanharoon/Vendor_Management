@@ -217,28 +217,48 @@ img:fullscreen {
         <form method="post" action="{{ url_for('home_blueprint.add_vendor') }}">
           {{ vendor_form.hidden_tag() }}
           <div class="form-group">
-            <label for="name" class="form-label">Name:</label>
-            {{ vendor_form.name(class="form-control", id="name", placeholder="Enter name") }}
+            <label for="name" class="form-label">Vendor Name:</label>
+            {{ vendor_form.name(class="form-control", id="name") }}
           </div>
           <div class="form-group">
-            <label for="location" class="form-label">Location:</label>
-            {{ vendor_form.location(class="form-control", id="location", placeholder="Enter location") }}
+            <label for="address" class="form-label">Address:</label>
+            {{ vendor_form.address(class="form-control", id="address") }}
           </div>
           <div class="form-group">
-            <label for="contact" class="form-label">Contact:</label>
-            {{ vendor_form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
+            <label for="city" class="form-label">City:</label>
+            {{ vendor_form.city(class="form-control", id="city") }}
           </div>
           <div class="form-group">
-            <label for="business_type" class="form-label">Business Type:</label>
-            {{ vendor_form.business_type(class="form-control", id="business_type", placeholder="Enter Business Type") }}
+            <label for="contact_person_name" class="form-label">Contact Person Name:</label>
+            {{ vendor_form.contact_person_name(class="form-control", id="contact_person_name") }}
           </div>
           <div class="form-group">
-            <label for="country" class="form-label">Country:</label>
-            {{ vendor_form.country(class="form-control", id="country", placeholder="Enter country") }}
+            <label for="designation" class="form-label">Designation:</label>
+            {{ vendor_form.designation(class="form-control", id="designation") }}
           </div>
           <div class="form-group">
-            <label for="email" class="form-label">Email:</label>
-            {{ vendor_form.email(class="form-control", id="email", placeholder="Enter email") }}
+            <label for="contact_number" class="form-label">Contact Number:</label>
+            {{ vendor_form.contact_number(class="form-control", id="contact_number") }}
+          </div>
+          <div class="form-group">
+            <label for="phone_number" class="form-label">Phone Number:</label>
+            {{ vendor_form.phone_number(class="form-control", id="phone_number") }}
+          </div>
+          <div class="form-group">
+            <label for="head_name" class="form-label">Head of Organization Name:</label>
+            {{ vendor_form.head_name(class="form-control", id="head_name") }}
+          </div>
+          <div class="form-group">
+            <label for="head_designation" class="form-label">Head Designation:</label>
+            {{ vendor_form.head_designation(class="form-control", id="head_designation") }}
+          </div>
+          <div class="form-group">
+            <label for="head_email" class="form-label">Head Email:</label>
+            {{ vendor_form.head_email(class="form-control", id="head_email") }}
+          </div>
+          <div class="form-group">
+            <label for="head_phone_number" class="form-label">Head Phone Number:</label>
+            {{ vendor_form.head_phone_number(class="form-control", id="head_phone_number") }}
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-secondary">Submit</button>
@@ -335,28 +355,48 @@ img:fullscreen {
         <form method="post" action="{{ url_for('home_blueprint.add_client') }}">
           {{ client_form.hidden_tag() }}
           <div class="form-group">
-            <label for="name" class="form-label">Name:</label>
-            {{ client_form.name(class="form-control", id="name", placeholder="Enter name") }}
+            <label for="name" class="form-label">Client Name:</label>
+            {{ client_form.name(class="form-control", id="name") }}
           </div>
           <div class="form-group">
-            <label for="location" class="form-label">Location:</label>
-            {{ client_form.location(class="form-control", id="location", placeholder="Enter location") }}
+            <label for="address" class="form-label">Client Address:</label>
+            {{ client_form.address(class="form-control", id="address") }}
           </div>
           <div class="form-group">
-            <label for="contact" class="form-label">Contact:</label>
-            {{ client_form.contact(class="form-control", id="contact", placeholder="Enter contact") }}
+            <label for="city" class="form-label">City:</label>
+            {{ client_form.city(class="form-control", id="city") }}
           </div>
           <div class="form-group">
-            <label for="business_type" class="form-label">Business Type:</label>
-            {{ client_form.business_type(class="form-control", id="business_type", placeholder="Enter Business Type") }}
+            <label for="contact_person_name" class="form-label">Contact Person Name:</label>
+            {{ client_form.contact_person_name(class="form-control", id="contact_person_name") }}
           </div>
           <div class="form-group">
-            <label for="country" class="form-label">Country:</label>
-            {{ client_form.country(class="form-control", id="country", placeholder="Enter country") }}
+            <label for="designation" class="form-label">Designation of Contact Person:</label>
+            {{ client_form.designation(class="form-control", id="designation") }}
           </div>
           <div class="form-group">
-            <label for="email" class="form-label">Email:</label>
-            {{ client_form.email(class="form-control", id="email", placeholder="Enter email") }}
+            <label for="contact_number" class="form-label">Contact Number:</label>
+            {{ client_form.contact_number(class="form-control", id="contact_number") }}
+          </div>
+          <div class="form-group">
+            <label for="phone_number" class="form-label">Phone Number:</label>
+            {{ client_form.phone_number(class="form-control", id="phone_number") }}
+          </div>
+          <div class="form-group">
+            <label for="head_name" class="form-label">Head of Organization Name:</label>
+            {{ client_form.head_name(class="form-control", id="head_name") }}
+          </div>
+          <div class="form-group">
+            <label for="head_designation" class="form-label">Head Designation:</label>
+            {{ client_form.head_designation(class="form-control", id="head_designation") }}
+          </div>
+          <div class="form-group">
+            <label for="head_email" class="form-label">Head Email:</label>
+            {{ client_form.head_email(class="form-control", id="head_email") }}
+          </div>
+          <div class="form-group">
+            <label for="head_phone_number" class="form-label">Head Phone Number:</label>
+            {{ client_form.head_phone_number(class="form-control", id="head_phone_number") }}
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-secondary">Submit</button>

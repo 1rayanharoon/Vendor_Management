@@ -61,11 +61,17 @@ def add_vendor():
         try:
             vendor = Vendor(
                 name=vendor_form.name.data,
-                location=vendor_form.location.data,
-                contact=vendor_form.contact.data,
-                business_type=vendor_form.business_type.data,
-                country=vendor_form.country.data,
-                email=vendor_form.email.data
+                address=vendor_form.address.data,
+                city=vendor_form.city.data,
+                contact_person_name=vendor_form.contact_person_name.data,
+                designation=vendor_form.designation.data,
+                contact_number=vendor_form.contact_number.data,
+                phone_number=vendor_form.phone_number.data,
+                head_name=vendor_form.head_name.data,
+                head_designation=vendor_form.head_designation.data,
+                head_email=vendor_form.head_email.data,
+                head_phone_number=vendor_form.head_phone_number.data,
+                google_pin=vendor_form.google_pin.data
             )
 
             db.session.add(vendor)

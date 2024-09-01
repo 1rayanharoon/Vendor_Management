@@ -47,11 +47,17 @@ class Vendor(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    location = db.Column(db.String(100), nullable=False)
-    contact = db.Column(db.String(100), nullable=False)
-    business_type = db.Column(db.String(100), nullable=False)
-    country = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    contact_person_name = db.Column(db.String(100), nullable=False)
+    designation = db.Column(db.String(100), nullable=False)
+    contact_number = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(100), nullable=False)
+    head_name = db.Column(db.String(100), nullable=False)
+    head_designation = db.Column(db.String(100), nullable=False)
+    head_email = db.Column(db.String(100), nullable=False)
+    head_phone_number = db.Column(db.String(100), nullable=False)
+    google_pin = db.Column(db.String(255), nullable=True)  # Optional
     def __repr__(self):
         return f"Vendor('{self.name}', '{self.location}', '{self.contact}, '{self.business_type}', '{self.country}', '{self.email}')"
     
@@ -83,11 +89,16 @@ class Client(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    location = db.Column(db.String(100), nullable=False)
-    contact = db.Column(db.String(100), nullable=False)
-    business_type = db.Column(db.String(100), nullable=False)
-    country = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.String(100))
+    city = db.Column(db.String(50))
+    contact_person_name = db.Column(db.String(100))
+    designation = db.Column(db.String(100))
+    contact_number = db.Column(db.String(50))
+    phone_number = db.Column(db.String(50))
+    head_name = db.Column(db.String(100))
+    head_designation = db.Column(db.String(100))
+    head_email = db.Column(db.String(100))
+    head_phone_number = db.Column(db.String(50))
     def __repr__(self):
         return f"Clients('{self.name}', '{self.location}', '{self.contact}, '{self.business_type}', '{self.country}', '{self.email}')"
 

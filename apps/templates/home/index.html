@@ -65,22 +65,32 @@ img:fullscreen {
                   <thead class=" text-primary">
                       <tr>
                           <th>Name</th>
-                          <th>Location</th>
-                          <th>Contact</th>
-                          <th>Business Type</th>
-                          <th>Country</th>
-                          <th>Email</th>
+                          <td>Address</td>
+                          <td>City</td>
+                          <td>Contact Person Name</td>
+                          <td>Designation</td>
+                          <td>Contact Number</td>
+                          <td>Phone Number</td>
+                          <td>Head of Organization Name</td>
+                          <td>Head Designation</td>
+                          <td>Head Email</td>
+                          <td>Head Phone Number</td>
                       </tr>
                   </thead>
                   <tbody>
                     {% for vendor in vendors %}
                     <tr>
                         <td>{{ vendor.name }}</td>
-                        <td>{{ vendor.location }}</td>
-                        <td>{{ vendor.contact }}</td>
-                        <td>{{ vendor.business_type }}</td>
-                        <td>{{ vendor.country }}</td>
-                        <td>{{ vendor.email }}</td>
+                        <td>{{ vendor.address }}</td>
+                        <td>{{ vendor.city }}</td>
+                        <td>{{ vendor.contact_person_name }}</td>
+                        <td>{{ vendor.designation }}</td>
+                        <td>{{ vendor.contact_number }}</td>
+                        <td>{{ vendor.phone_number }}</td>
+                        <td>{{ vendor.head_name }}</td>
+                        <td>{{ vendor.head_designation }}</td>
+                        <td>{{ vendor.head_email }}</td>
+                        <td>{{ vendor.head_phone_number }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -144,22 +154,32 @@ img:fullscreen {
                   <thead class=" text-primary">
                       <tr>
                           <th>Name</th>
-                          <th>Location</th>
-                          <th>Contact</th>
-                          <th>Business Type</th>
-                          <th>Country</th>
-                          <th>Email</th>
+                          <td>Address</td>
+                          <td>City</td>
+                          <td>Contact Person Name</td>
+                          <td>Designation</td>
+                          <td>Contact Number</td>
+                          <td>Phone Number</td>
+                          <td>Head of Organization Name</td>
+                          <td>Head Designation</td>
+                          <td>Head Email</td>
+                          <td>Head Phone Number</td>
                       </tr>
                   </thead>
                   <tbody>
                     {% for client in clients %}
                     <tr>
                         <td>{{ client.name }}</td>
-                        <td>{{ client.location }}</td>
-                        <td>{{ client.contact }}</td>
-                        <td>{{ client.business_type }}</td>
-                        <td>{{ client.country }}</td>
-                        <td>{{ client.email }}</td>
+                        <td>{{ client.address }}</td>
+                        <td>{{ client.city }}</td>
+                        <td>{{ client.contact_person_name }}</td>
+                        <td>{{ client.designation }}</td>
+                        <td>{{ client.contact_number }}</td>
+                        <td>{{ client.phone_number }}</td>
+                        <td>{{ client.head_name }}</td>
+                        <td>{{ client.head_designation }}</td>
+                        <td>{{ client.head_email }}</td>
+                        <td>{{ client.head_phone_number }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

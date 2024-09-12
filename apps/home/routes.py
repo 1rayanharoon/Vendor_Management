@@ -71,7 +71,7 @@ def add_vendor():
                 head_designation=vendor_form.head_designation.data,
                 head_email=vendor_form.head_email.data,
                 head_phone_number=vendor_form.head_phone_number.data,
-                google_pin=vendor_form.google_pin.data
+                
             )
 
             db.session.add(vendor)
@@ -178,11 +178,16 @@ def add_client():
         try:
             client = Client(
                 name=client_form.name.data,
-                location=client_form.location.data,
-                contact=client_form.contact.data,
-                business_type=client_form.business_type.data,
-                country=client_form.country.data,
-                email=client_form.email.data
+                address=client_form.address.data,
+                city=client_form.city.data,
+                contact_person_name=client_form.contact_person_name.data,
+                designation=client_form.designation.data,
+                contact_number=client_form.contact_number.data,
+                phone_number=client_form.phone_number.data,
+                head_name=client_form.head_name.data,
+                head_designation=client_form.head_designation.data,
+                head_email=client_form.head_email.data,
+                head_phone_number=client_form.head_phone_number.data,
             )
 
             db.session.add(client)

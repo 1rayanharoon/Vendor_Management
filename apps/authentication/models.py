@@ -73,7 +73,9 @@ class Article(db.Model):
     Size = db.Column(db.String(100), nullable=False)
     Description = db.Column(db.String(100), nullable=False)
     images = db.relationship('ArticleImage', backref='article', lazy='dynamic')
+    client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'), nullable=False)
 
+    client = db.relationship('Client', back_populates='articles')
     def __repr__(self):
         return f"Article('{self.Category}', '{self.Product_Name}', '{self.Article_No}', '{self.Gender}', '{self.Color}', '{self.Size}', '{self.Description}')"
 
@@ -99,6 +101,9 @@ class Client(db.Model):
     head_designation = db.Column(db.String(100))
     head_email = db.Column(db.String(100))
     head_phone_number = db.Column(db.String(50))
+
+    articles = db.relationship('Article', back_populates='client', lazy='dynamic')
+
     def __repr__(self):
         return f"Clients('{self.name}', '{self.location}', '{self.contact}, '{self.business_type}', '{self.country}', '{self.email}')"
 

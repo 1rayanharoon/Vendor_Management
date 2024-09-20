@@ -7,7 +7,7 @@ from jinja2 import TemplateNotFound
 from apps.authentication.forms import VendorForm
 from apps.authentication.models import Vendor
 from werkzeug.utils import secure_filename
-import os
+import os, csv
 from flask import current_app
 from apps.authentication.forms import ArticleForm, InspectorForm
 from apps.authentication.models import Article, ArticleImage, Inspector
@@ -93,9 +93,55 @@ def add_vendor():
     # If form validation fails, render the template with the current form
     return render_template('home/index.html', vendor_form=vendor_form, article_form=ArticleForm(), client_form=ClientForm(), msg="Failed to add vendor. Please try again.")
 
+
+def get_clients_from_csv():
+    client_dir = os.path.join(current_app.root_path, 'client')
+    csv_file = os.path.join(client_dir, 'clients.csv')
+
+    clients_from_csv = []
+    if os.path.exists(csv_file):
+        with open(csv_file, mode='r') as file:
+            reader = csv.DictReader(file)  # Using DictReader to access the header
+            for row in reader:
+                clients_from_csv.append({
+                    'name': row['name'],
+                    'address': row['address'],
+                    'city': row['city'],
+                    'contact_person_name': row['contact_person_name'],
+                    'designation': row['designation'],
+                    'contact_number': row['contact_number'],
+                    'phone_number': row['phone_number'],
+                    'head_name': row['head_name'],
+                    'head_designation': row['head_designation'],
+                    'head_email': row['head_email'],
+                    'head_phone_number': row['head_phone_number']
+                })
+    return clients_from_csv
+
 @blueprint.route('/add_article', methods=['POST'])
 def add_article():
     article_form = ArticleForm(request.form)
+    db_clients = Client.query.all()
+
+    # Load clients from the CSV file
+    csv_clients = []
+    client_dir = os.path.join(current_app.root_path, 'client')
+    csv_file = os.path.join(client_dir, 'clients.csv')
+
+    if os.path.exists(csv_file):
+        with open(csv_file, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                csv_clients.append({
+                    'name': row['name'],
+                    'address': row['address'],
+                    'city': row['city'],
+                    'contact_person_name': row['contact_person_name'],
+                })
+
+    # Combine database and CSV clients
+    all_clients = [{'name': client.name, 'address': client.address, 'city': client.city, 'contact_person_name': client.contact_person_name, } for client in db_clients] + csv_clients
+
     
     if article_form.validate_on_submit():
         # Retrieve data from the form
@@ -106,6 +152,7 @@ def add_article():
         Color = article_form.Color.data
         Size = article_form.Size.data
         Description = article_form.Description.data
+        client_id=article_form.client.data 
 
         # Check if the article number already exists in the database
         existing_article = Article.query.filter_by(Article_No=Article_Number).first()
@@ -121,7 +168,8 @@ def add_article():
             Gender=Gender,
             Color=Color,
             Size=Size,
-            Description=Description
+            Description=Description,
+            Client_id=client_id
         )
 
         try:
@@ -175,37 +223,69 @@ def allowed_file(filename):
 def add_client():
     client_form = ClientForm(request.form)
     if client_form.validate_on_submit():
-        try:
-            client = Client(
-                name=client_form.name.data,
-                address=client_form.address.data,
-                city=client_form.city.data,
-                contact_person_name=client_form.contact_person_name.data,
-                designation=client_form.designation.data,
-                contact_number=client_form.contact_number.data,
-                phone_number=client_form.phone_number.data,
-                head_name=client_form.head_name.data,
-                head_designation=client_form.head_designation.data,
-                head_email=client_form.head_email.data,
-                head_phone_number=client_form.head_phone_number.data,
-            )
+        # Retrieve data from form
+        name = client_form.name.data
+        address = client_form.address.data
+        city = client_form.city.data
+        contact_person_name = client_form.contact_person_name.data
+        designation = client_form.designation.data
+        contact_number = client_form.contact_number.data
+        phone_number = client_form.phone_number.data
+        head_name = client_form.head_name.data
+        head_designation = client_form.head_designation.data
+        head_email = client_form.head_email.data
+        head_phone_number = client_form.head_phone_number.data
+        
+        # Add client to the database
+        new_client = Client(
+            name=name,
+            address=address,
+            city=city,
+            contact_person_name=contact_person_name,
+            designation=designation,
+            contact_number=contact_number,
+            phone_number=phone_number,
+            head_name=head_name,
+            head_designation=head_designation,
+            head_email=head_email,
+            head_phone_number=head_phone_number
+        )
+        db.session.add(new_client)
+        db.session.commit()
 
-            db.session.add(client)
-            db.session.commit()
-            flash('Client added successfully', 'success')
-            current_app.logger.info(f"Client {client.name} added successfully")
-        except Exception as e:
-            db.session.rollback()
-            flash('Error adding client. Please try again.', 'error')
-            current_app.logger.error(f"Error adding client: {str(e)}")
-    else:
-        for field, errors in client_form.errors.items():
-            for error in errors:
-                flash(f"Error in {field}: {error}", 'error')
-                current_app.logger.warning(f"Form validation error in {field}: {error}")
 
-    return redirect(url_for('home_blueprint.index'))
-    
+        client_dir = os.path.join(current_app.root_path, 'client')
+        os.makedirs(client_dir, exist_ok=True)  # Create 'client' folder if it doesn't exist
+
+        # Path for the CSV file
+        csv_file = os.path.join(client_dir, 'clients.csv')
+        
+        # Check if CSV file exists to decide whether to write headers
+        write_header = not os.path.exists(csv_file)
+
+        # Write the client data to the CSV file
+        with open(csv_file, mode='a', newline='') as file:
+            writer = csv.writer(file)
+
+            # Write the header if it's a new file
+            if write_header:
+                writer.writerow([
+                    'name', 'address', 'city', 'contact_person_name', 'designation', 
+                    'contact_number', 'phone_number', 'head_name', 
+                    'head_designation', 'head_email', 'head_phone_number'
+                ])
+            
+            # Write the client data row
+            writer.writerow([name, address, city, contact_person_name, designation, contact_number, 
+                             phone_number, head_name, head_designation, head_email, head_phone_number])
+
+
+        return redirect(url_for('home_blueprint.index'))
+
+    return render_template('home/index.html', client_form=client_form)
+            
+            
+        
     # If form validation fails, render the template with the current form
     return render_template('home/index.html', client_form=client_form, vendor_form=VendorForm(), article_form=ArticleForm(), inspector_form=InspectorForm(),  msg="Failed to add client. Please try again.")
 

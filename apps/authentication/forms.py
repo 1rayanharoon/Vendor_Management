@@ -75,7 +75,7 @@ class ArticleForm(FlaskForm):
     Article_images = FileField('Images', validators=[
         FileAllowed(['png', 'jpg', 'jpeg'], 'Only PNG, JPG, and JPEG images are allowed!')
     ])
-
+    client_id = SelectField('Client', coerce=int, validators=[DataRequired()])
 
 
 
@@ -91,6 +91,8 @@ class ClientForm(FlaskForm):
     head_designation = StringField('Head Designation')
     head_email = StringField('Head Email', validators=[Email()])
     head_phone_number = StringField('Head Phone Number')
+
+    
 
 class InspectorForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])

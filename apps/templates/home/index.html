@@ -117,6 +117,7 @@ img:fullscreen {
                           <th>Color</th>
                           <th>Size</th>
                           <th>Description</th>
+                          <th>Client Name</th>
                           <th>View Images</th>
 
                       </tr>
@@ -131,6 +132,7 @@ img:fullscreen {
                         <td>{{ article.Color }}</td>
                         <td>{{ article.Size }}</td>
                         <td>{{ article.Description }}</td>
+                        <td>{{ article.client }}</td>
                         <td>
                           <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#imageModal{{ article.Article_No }}">View Images</button>
                         </td>
@@ -329,9 +331,18 @@ img:fullscreen {
               {{ article_form.Description(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="Article_images">Images</label>
-            {{ article_form.Article_images(class="form-control", id="Article_images", accept=".png, .jpg, .jpeg", multiple=True, onchange="previewImages()") }}
+            <label for="client">Client Name</label>
+            {{ article_form.client_id(class="form-control") }}
           </div>
+          <div class="form-group">
+            <label for="client">Select Client</label>
+            <select name="client_id" class="form-control">
+                <option value="">Select a client</option>
+                {% for client in clients %}
+                    <option value="{{ client.id }}">{{ client.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
           <div class="form-group">
             <label>Preview:</label>
             <div id="imagePreview" class="d-flex flex-wrap"></div>

@@ -15,6 +15,20 @@ from sqlalchemy.exc import IntegrityError
 from apps.authentication.forms import ClientForm
 from apps.authentication.models import Client
 
+def update_clients_csv():
+    csv_path = os.path.join(current_app.root_path, 'static', 'clients', 'clients.csv')
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+    
+    # Get all clients from the database
+    clients = Client.query.all()
+    
+    with open(csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Name'])  # Write header
+        for client in clients:
+            writer.writerow([client.name])
+
+
 def check_account_type(*allowed_types):
     def decorator(f):
         @wraps(f)
@@ -49,6 +63,7 @@ def index():
     articles = Article.query.all()
     clients= Client.query.all()
     inspectors = Inspector.query.all()
+    update_clients_csv()
     
     # db.session.query(Article).delete()
     # db.session.commit()
@@ -71,7 +86,6 @@ def add_vendor():
                 head_designation=vendor_form.head_designation.data,
                 head_email=vendor_form.head_email.data,
                 head_phone_number=vendor_form.head_phone_number.data,
-                google_pin=vendor_form.google_pin.data
             )
 
             db.session.add(vendor)
@@ -95,10 +109,38 @@ def add_vendor():
 
 
 
+
+def add_client_to_csv(client_name):
+    csv_path = os.path.join(current_app.root_path, 'static', 'clients', 'clients.csv')
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+    
+    file_exists = os.path.isfile(csv_path)
+    try:
+        with open(csv_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            if not file_exists:
+                writer.writerow(['Name'])  # Write header if file is new
+            writer.writerow([client_name])
+    except Exception as e:
+        current_app.logger.error(f"Error adding client: {str(e)}")
+        flash('Error adding client to csv file. Please try again.', 'error')
+
+def get_clients_from_csv():
+    csv_path = os.path.join(current_app.root_path, 'static', 'clients', 'clients.csv')
+    if not os.path.exists(csv_path):
+        return []
+    
+    with open(csv_path, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader, None)
+        return [row[0] for row in reader]
+    
+
+
+
 @blueprint.route('/add_article', methods=['POST'])
 def add_article():
     article_form = ArticleForm(request.form)
-    
     
     if article_form.validate_on_submit():
         # Retrieve data from the form
@@ -109,13 +151,12 @@ def add_article():
         Color = article_form.Color.data
         Size = article_form.Size.data
         Description = article_form.Description.data
-        
 
         # Check if the article number already exists in the database
         existing_article = Article.query.filter_by(Article_No=Article_Number).first()
         if existing_article:
             msg = f"Article number {Article_Number} already exists. Please choose a different number."
-            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, client_form=ClientForm(), msg=msg)
+            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, client_form=ClientForm(), inspector_form=InspectorForm(), msg=msg)
 
         # Create a new article object
         article = Article(
@@ -125,8 +166,7 @@ def add_article():
             Gender=Gender,
             Color=Color,
             Size=Size,
-            Description=Description,
-
+            Description=Description
         )
 
         try:
@@ -156,62 +196,87 @@ def add_article():
                 # Commit the changes to the database
                 db.session.commit()
 
-        except IntegrityError as e:
-            db.session.rollback()
-            msg = "An error occurred while adding the article. Please try again."
-            return render_template('home/index.html', vendor_form=VendorForm(), client_form=ClientForm(), article_form=article_form, msg=msg)
         except Exception as e:
             db.session.rollback()
-            msg = f"An unexpected error occurred: {str(e)}"
-            return render_template('home/index.html', vendor_form=VendorForm(),client_form=ClientForm(), article_form=article_form, msg=msg)
-
+            current_app.logger.error(f"Error adding client: {str(e)}")
+            flash('Error adding client. Please try again.', 'error')
+            return redirect(url_for('home_blueprint.index'))
+        
+        flash('Article added successfully', 'success')
         # Redirect to index with a new, empty form
         return redirect(url_for('home_blueprint.index'))
 
     # If form validation fails, render the template with the current form
-    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, clientform=ClientForm(),inspector_form=InspectorForm(), msg="Failed to add article. Please try again.")
+    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, client_form=ClientForm(),inspector_form=InspectorForm(), msg="Failed to add article. Please try again.")
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+
+@blueprint.route('/get_clients')
+def get_clients():
+    clients = get_clients_from_csv()
+    return {'clients': clients}
+
+
 @blueprint.route('/add_client', methods=['POST'])
 def add_client():
     client_form = ClientForm(request.form)
+    
     if client_form.validate_on_submit():
         try:
+            # Create client instance
             client = Client(
                 name=client_form.name.data,
-                location=client_form.location.data,
-                contact=client_form.contact.data,
-                business_type=client_form.business_type.data,
-                country=client_form.country.data,
-                email=client_form.email.data
+                address=client_form.address.data,
+                city=client_form.city.data,
+                contact_person_name=client_form.contact_person_name.data,
+                designation=client_form.designation.data,
+                contact_number=client_form.contact_number.data,
+                phone_number=client_form.phone_number.data,
+                head_name=client_form.head_name.data,
+                head_designation=client_form.head_designation.data,
+                head_email=client_form.head_email.data,
+                head_phone_number=client_form.head_phone_number.data
             )
 
+            
             db.session.add(client)
             db.session.commit()
-            flash('Client added successfully', 'success')
+
+            print(client_form.name.data, client_form.city.data)
+            
             current_app.logger.info(f"Client {client.name} added successfully")
+            flash('Client added successfully', 'success')
+
+            add_client_to_csv(client_form.name.data)
+
+            
+            return redirect(url_for('home_blueprint.index'))
+
         except Exception as e:
+            
             db.session.rollback()
-            flash('Error adding client. Please try again.', 'error')
             current_app.logger.error(f"Error adding client: {str(e)}")
+            flash('Error adding client. Please try again.', 'error')
+    
+    # Handle form validation errors
     else:
         for field, errors in client_form.errors.items():
             for error in errors:
                 flash(f"Error in {field}: {error}", 'error')
                 current_app.logger.warning(f"Form validation error in {field}: {error}")
 
-        return redirect(url_for('home_blueprint.index'))
-
-    return render_template('home/index.html', client_form=client_form)
-            
-            
-        
-    # If form validation fails, render the template with the current form
-    return render_template('home/index.html', client_form=client_form, vendor_form=VendorForm(), article_form=ArticleForm(), inspector_form=InspectorForm(),  msg="Failed to add client. Please try again.")
+    # Re-render the form with validation errors (do not redirect here)
+    return render_template(
+        'home/index.html',
+        client_form=client_form,
+        vendor_form=VendorForm(),
+        article_form=ArticleForm(),
+        inspector_form=InspectorForm()
+    )
 
 
 @blueprint.route('/add_inspector', methods=['POST'])

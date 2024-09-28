@@ -65,22 +65,32 @@ img:fullscreen {
                   <thead class=" text-primary">
                       <tr>
                           <th>Name</th>
-                          <th>Location</th>
-                          <th>Contact</th>
-                          <th>Business Type</th>
-                          <th>Country</th>
-                          <th>Email</th>
+                          <td>Address</td>
+                          <td>City</td>
+                          <td>Contact Person Name</td>
+                          <td>Designation</td>
+                          <td>Contact Number</td>
+                          <td>Phone Number</td>
+                          <td>Head of Organization Name</td>
+                          <td>Head Designation</td>
+                          <td>Head Email</td>
+                          <td>Head Phone Number</td>
                       </tr>
                   </thead>
                   <tbody>
                     {% for vendor in vendors %}
                     <tr>
                         <td>{{ vendor.name }}</td>
-                        <td>{{ vendor.location }}</td>
-                        <td>{{ vendor.contact }}</td>
-                        <td>{{ vendor.business_type }}</td>
-                        <td>{{ vendor.country }}</td>
-                        <td>{{ vendor.email }}</td>
+                        <td>{{ vendor.address }}</td>
+                        <td>{{ vendor.city }}</td>
+                        <td>{{ vendor.contact_person_name }}</td>
+                        <td>{{ vendor.designation }}</td>
+                        <td>{{ vendor.contact_number }}</td>
+                        <td>{{ vendor.phone_number }}</td>
+                        <td>{{ vendor.head_name }}</td>
+                        <td>{{ vendor.head_designation }}</td>
+                        <td>{{ vendor.head_email }}</td>
+                        <td>{{ vendor.head_phone_number }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -122,7 +132,7 @@ img:fullscreen {
                         <td>{{ article.Color }}</td>
                         <td>{{ article.Size }}</td>
                         <td>{{ article.Description }}</td>
-                        <td>{{ article.client }}</td>
+                        <td>{{ article.Client_Name }}</td>
                         <td>
                           <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#imageModal{{ article.Article_No }}">View Images</button>
                         </td>
@@ -146,22 +156,32 @@ img:fullscreen {
                   <thead class=" text-primary">
                       <tr>
                           <th>Name</th>
-                          <th>Location</th>
-                          <th>Contact</th>
-                          <th>Business Type</th>
-                          <th>Country</th>
-                          <th>Email</th>
+                          <td>Address</td>
+                          <td>City</td>
+                          <td>Contact Person Name</td>
+                          <td>Designation</td>
+                          <td>Contact Number</td>
+                          <td>Phone Number</td>
+                          <td>Head of Organization Name</td>
+                          <td>Head Designation</td>
+                          <td>Head Email</td>
+                          <td>Head Phone Number</td>
                       </tr>
                   </thead>
                   <tbody>
                     {% for client in clients %}
                     <tr>
                         <td>{{ client.name }}</td>
-                        <td>{{ client.location }}</td>
-                        <td>{{ client.contact }}</td>
-                        <td>{{ client.business_type }}</td>
-                        <td>{{ client.country }}</td>
-                        <td>{{ client.email }}</td>
+                        <td>{{ client.address }}</td>
+                        <td>{{ client.city }}</td>
+                        <td>{{ client.contact_person_name }}</td>
+                        <td>{{ client.designation }}</td>
+                        <td>{{ client.contact_number }}</td>
+                        <td>{{ client.phone_number }}</td>
+                        <td>{{ client.head_name }}</td>
+                        <td>{{ client.head_designation }}</td>
+                        <td>{{ client.head_email }}</td>
+                        <td>{{ client.head_phone_number }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -311,18 +331,15 @@ img:fullscreen {
               {{ article_form.Description(class="form-control") }}
           </div>
           <div class="form-group">
-            <label for="client">Client Name</label>
-            {{ article_form.client_id(class="form-control") }}
-          </div>
-          <div class="form-group">
-            <label for="client">Select Client</label>
-            <select name="client_id" class="form-control">
-                <option value="">Select a client</option>
-                {% for client in clients %}
-                    <option value="{{ client.id }}">{{ client.name }}</option>
-                {% endfor %}
+            <label for="Client_Name">Client Name</label>
+            <select id="clientNameSelect" name="Client_Name" class="form-control">
+                <option value="">Select Client</option>
             </select>
-        </div>
+        </div>        
+          <div class="form-group">
+            <label for="Article_images">Images</label>
+            {{ article_form.Article_images(class="form-control", id="Article_images", accept=".png, .jpg, .jpeg", multiple=True, onchange="previewImages()") }}
+          </div>
           <div class="form-group">
             <label>Preview:</label>
             <div id="imagePreview" class="d-flex flex-wrap"></div>
@@ -562,6 +579,22 @@ function previewImages() {
       });
     }
   }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch('/get_clients')  
+        .then(response => response.json())
+        .then(data => {
+            const clientSelect = document.getElementById('clientNameSelect');
+            data.clients.forEach(clientName => {
+                let option = document.createElement('option');
+                option.value = clientName;
+                option.textContent = clientName;
+                clientSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching client names:', error));
+});
+
 
 </script>
 

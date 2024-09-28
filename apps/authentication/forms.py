@@ -75,22 +75,23 @@ class ArticleForm(FlaskForm):
     Article_images = FileField('Images', validators=[
         FileAllowed(['png', 'jpg', 'jpeg'], 'Only PNG, JPG, and JPEG images are allowed!')
     ])
-    client_id = SelectField('Client', coerce=int, validators=[DataRequired()])
+    Client_Name = SelectField('Client Name', choices=[], validators=[DataRequired()])  # New field
+
 
 
 
 class ClientForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    address = StringField('Address')
-    city = StringField('City')
-    contact_person_name = StringField('Contact Person Name')
-    designation = StringField('Designation of Contact Person')
-    contact_number = StringField('Contact Number')
-    phone_number = StringField('Phone Number')
-    head_name = StringField('Head of Organization Name')
-    head_designation = StringField('Head Designation')
+    address = StringField('Address', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    contact_person_name = StringField('Contact Person Name', validators=[DataRequired()])
+    designation = StringField('Designation of Contact Person', validators=[DataRequired()])
+    contact_number = StringField('Contact Number', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    head_name = StringField('Head of Organization Name',validators=[DataRequired()])
+    head_designation = StringField('Head Designation', validators=[DataRequired()])
     head_email = StringField('Head Email', validators=[Email()])
-    head_phone_number = StringField('Head Phone Number')
+    head_phone_number = StringField('Head Phone Number',validators=[DataRequired()])
 
     
 

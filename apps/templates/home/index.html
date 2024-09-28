@@ -303,7 +303,7 @@ img:fullscreen {
         <form method="post" action="{{ url_for('home_blueprint.add_article') }}" enctype="multipart/form-data">
           {{ article_form.hidden_tag() }}
           <div class="form-group">
-              <label for="Category">Category</label>
+              <label for="Category">Category</label>s
               {{ article_form.Category(class="form-control") }}
           </div>
           <div class="form-group">
@@ -332,10 +332,8 @@ img:fullscreen {
           </div>
           <div class="form-group">
             <label for="Client_Name">Client Name</label>
-            <select id="clientNameSelect" name="Client_Name" class="form-control">
-                <option value="">Select Client</option>
-            </select>
-        </div>        
+            {{ article_form.Client_Name(class="form-control", id="clientNameSelect") }}
+          </div>
           <div class="form-group">
             <label for="Article_images">Images</label>
             {{ article_form.Article_images(class="form-control", id="Article_images", accept=".png, .jpg, .jpeg", multiple=True, onchange="previewImages()") }}
@@ -580,19 +578,27 @@ function previewImages() {
     }
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    fetch('/get_clients')  
-        .then(response => response.json())
-        .then(data => {
-            const clientSelect = document.getElementById('clientNameSelect');
-            data.clients.forEach(clientName => {
-                let option = document.createElement('option');
-                option.value = clientName;
-                option.textContent = clientName;
-                clientSelect.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error fetching client names:', error));
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    function updateClientList() {
+        fetch('/get_clients')
+            .then(response => response.json())
+            .then(data => {
+                const clientSelect = document.getElementById('clientNameSelect');
+                clientSelect.innerHTML = '<option value="">Select Client</option>';
+                data.clients.forEach(clientName => {
+                    let option = document.createElement('option');
+                    option.value = clientName;
+                    option.textContent = clientName;
+                    clientSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching client names:', error));
+    }
+
+    // Call updateClientList when the modal is shown
+    $('#articleModal').on('shown.bs.modal', updateClientList);
 });
 
 

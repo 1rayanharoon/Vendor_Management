@@ -1,6 +1,6 @@
 from apps import db
 from apps.home import blueprint
-from flask import render_template, request, redirect, url_for, flash,session
+from flask import render_template, request, redirect, url_for, flash,session, jsonify
 from flask_login import login_required,logout_user
 from functools import wraps
 from jinja2 import TemplateNotFound
@@ -55,19 +55,32 @@ def image_files(article_name):
 @login_required
 @check_account_type('Admin', 'Vendor', 'Manager', 'Client', 'Inspector')
 def index():
-    vendor_form = VendorForm()  # Create a new, empty form instance
+    vendor_form = VendorForm()
     article_form = ArticleForm()
     client_form = ClientForm()
     inspector_form = InspectorForm()
-    vendors = Vendor.query.all()  # Fetch all vendors from the database
+    vendors = Vendor.query.all()
     articles = Article.query.all()
-    clients= Client.query.all()
+    clients = Client.query.all()
     inspectors = Inspector.query.all()
     update_clients_csv()
     
-    # db.session.query(Article).delete()
-    # db.session.commit()
-    return render_template('home/index.html', segment='index', vendor_form=vendor_form, article_form=article_form,client_form=client_form, inspector_form=inspector_form, vendors=vendors,articles=articles, clients=clients,inspectors=inspectors, image_files=image_files, session=session)
+    # Set choices for Client_Name in ArticleForm
+    clients_list = get_clients_from_csv()
+    article_form.Client_Name.choices = [(client, client) for client in clients_list]
+    
+    return render_template('home/index.html', 
+                           segment='index', 
+                           vendor_form=vendor_form, 
+                           article_form=article_form,
+                           client_form=client_form, 
+                           inspector_form=inspector_form, 
+                           vendors=vendors,
+                           articles=articles, 
+                           clients=clients,
+                           inspectors=inspectors, 
+                           image_files=image_files, 
+                           session=session)
 
 @blueprint.route('/add_vendor', methods=['POST'])
 def add_vendor():
@@ -140,45 +153,56 @@ def get_clients_from_csv():
 
 @blueprint.route('/add_article', methods=['POST'])
 def add_article():
+    current_app.logger.info("Entering add_article route")
     article_form = ArticleForm(request.form)
-    
+    clients = get_clients_from_csv()
+    article_form.Client_Name.choices = [(client, client) for client in clients]
+
+    current_app.logger.info(f"Form data: {request.form}")
+    current_app.logger.info(f"Client choices: {article_form.Client_Name.choices}")
+
     if article_form.validate_on_submit():
-        # Retrieve data from the form
-        Category = article_form.Category.data
-        Product_Name = article_form.Product_Name.data
-        Article_Number = article_form.Article_Number.data
-        Gender = article_form.Gender.data
-        Color = article_form.Color.data
-        Size = article_form.Size.data
-        Description = article_form.Description.data
-
-        # Check if the article number already exists in the database
-        existing_article = Article.query.filter_by(Article_No=Article_Number).first()
-        if existing_article:
-            msg = f"Article number {Article_Number} already exists. Please choose a different number."
-            return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, client_form=ClientForm(), inspector_form=InspectorForm(), msg=msg)
-
-        # Create a new article object
-        article = Article(
-            Category=Category,
-            Product_Name=Product_Name,
-            Article_No=Article_Number,
-            Gender=Gender,
-            Color=Color,
-            Size=Size,
-            Description=Description
-        )
-
+        current_app.logger.info("Form validated successfully")
         try:
+            # Retrieve data from the form
+            Category = article_form.Category.data
+            Product_Name = article_form.Product_Name.data
+            Article_Number = article_form.Article_Number.data
+            Gender = article_form.Gender.data
+            Color = article_form.Color.data
+            Size = article_form.Size.data
+            Description = article_form.Description.data
+            Client_Name = article_form.Client_Name.data
+
+            current_app.logger.info(f"Parsed form data: Category={Category}, Product_Name={Product_Name}, Article_Number={Article_Number}, Gender={Gender}, Color={Color}, Size={Size}, Description={Description}, Client_Name={Client_Name}")
+
+            # Check if the article number already exists in the database
+            existing_article = Article.query.filter_by(Article_No=Article_Number).first()
+            if existing_article:
+                current_app.logger.warning(f"Article number {Article_Number} already exists")
+                flash(f"Article number {Article_Number} already exists. Please choose a different number.", 'error')
+                return redirect(url_for('home_blueprint.index'))
+
+            # Create a new article object
+            article = Article(
+                Category=Category,
+                Product_Name=Product_Name,
+                Article_No=Article_Number,
+                Gender=Gender,
+                Color=Color,
+                Size=Size,
+                Description=Description,
+                Client_Name=Client_Name
+            )
+
             # Save article to the database
             db.session.add(article)
             db.session.commit()
+            current_app.logger.info(f"Article {Article_Number} added successfully")
 
-            # Retrieve uploaded images
+            # Handle image uploads
             images = request.files.getlist(article_form.Article_images.name)
-
             if images:
-                # Create the article-specific directory
                 article_dir = os.path.join(current_app.root_path, 'static', 'images', secure_filename(Product_Name))
                 os.makedirs(article_dir, exist_ok=True)
 
@@ -188,26 +212,35 @@ def add_article():
                         image_path = os.path.join(article_dir, filename)
                         image.save(image_path)
                         
-                        # Create a new ArticleImage object and save to the database
                         relative_path = os.path.join('images', secure_filename(Product_Name), filename)
                         article_image = ArticleImage(filename=relative_path, article_id=article.Article_No)
                         db.session.add(article_image)
 
-                # Commit the changes to the database
                 db.session.commit()
+                current_app.logger.info(f"Images for article {Article_Number} saved successfully")
+
+            flash('Article added successfully', 'success')
+            return redirect(url_for('home_blueprint.index'))
 
         except Exception as e:
             db.session.rollback()
-            current_app.logger.error(f"Error adding client: {str(e)}")
-            flash('Error adding client. Please try again.', 'error')
+            current_app.logger.error(f"Error adding article: {str(e)}")
+            flash('Error adding article. Please try again.', 'error')
             return redirect(url_for('home_blueprint.index'))
+    else:
+        current_app.logger.warning("Form validation failed")
+        for field, errors in article_form.errors.items():
+            for error in errors:
+                flash(f"Error in {field}: {error}", 'error')
+                current_app.logger.warning(f"Form validation error in {field}: {error}")
         
-        flash('Article added successfully', 'success')
-        # Redirect to index with a new, empty form
-        return redirect(url_for('home_blueprint.index'))
-
-    # If form validation fails, render the template with the current form
-    return render_template('home/index.html', vendor_form=VendorForm(), article_form=article_form, client_form=ClientForm(),inspector_form=InspectorForm(), msg="Failed to add article. Please try again.")
+    current_app.logger.info("Rendering index template with form errors")
+    return render_template('home/index.html', 
+                           vendor_form=VendorForm(), 
+                           article_form=article_form, 
+                           client_form=ClientForm(), 
+                           inspector_form=InspectorForm(), 
+                           msg="Failed to add article. Please check the form for errors.")
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -218,12 +251,13 @@ def allowed_file(filename):
 @blueprint.route('/get_clients')
 def get_clients():
     clients = get_clients_from_csv()
-    return {'clients': clients}
+    return jsonify(clients=clients)
 
 
 @blueprint.route('/add_client', methods=['POST'])
 def add_client():
     client_form = ClientForm(request.form)
+    
     
     if client_form.validate_on_submit():
         try:
@@ -246,14 +280,9 @@ def add_client():
             db.session.add(client)
             db.session.commit()
 
-            print(client_form.name.data, client_form.city.data)
             
             current_app.logger.info(f"Client {client.name} added successfully")
-            flash('Client added successfully', 'success')
-
-            add_client_to_csv(client_form.name.data)
-
-            
+            flash('Client added successfully', 'success')            
             return redirect(url_for('home_blueprint.index'))
 
         except Exception as e:
